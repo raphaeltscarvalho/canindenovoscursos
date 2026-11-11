@@ -1,11 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Planejador de Oferta Canindé</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: ferramenta em duas colunas (plano e cursos à esquerda, resultados à direita); uma coluna no celular. */
+/* Layout: ferramenta em duas colunas (plano, cursos e ajustes à esquerda; resultados à direita); uma coluna no celular. */
 :root {
   --bg: #F4F6F3;
   --surface: #FFFFFF;
@@ -86,7 +85,7 @@ body {
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 24px 40px;
 }
-.wrap { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+.wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
 h1, h2, h3 { margin: 0; text-wrap: balance; }
 h1 { font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; }
 h2 { font-size: 15px; font-weight: 600; }
@@ -98,7 +97,7 @@ button, input, select { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
-@media (min-width: 1040px) { .layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+@media (min-width: 1100px) { .layout { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); } }
 .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
 .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -106,23 +105,25 @@ button, input, select { font: inherit; color: inherit; }
 
 .btn { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 500; font-size: 13px; }
 .btn:hover { background: var(--surface-2); }
-.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.btn-primary:hover { background: var(--accent); filter: brightness(1.08); }
 .presets { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .years { display: flex; flex-direction: column; gap: 10px; }
-.year { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; align-items: center; padding: 10px 12px; background: var(--surface-2); border-radius: 6px; }
+.year { display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--surface-2); border-radius: 6px; }
+.year-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .year-label { font-family: var(--font-num); font-size: 20px; font-weight: 500; }
-.stepper { display: inline-flex; align-items: center; gap: 8px; justify-self: end; }
+.stepper { display: inline-flex; align-items: center; gap: 8px; }
 .stepper button { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 16px; line-height: 1; }
 .stepper button:hover:not([disabled]) { background: var(--accent-soft); }
 .stepper button[disabled] { opacity: 0.35; cursor: not-allowed; }
 .stepper .count { min-width: 2ch; text-align: center; font-family: var(--font-num); font-size: 18px; font-weight: 500; }
 .stepper .unit { color: var(--muted); font-size: 12px; }
-.chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-height: 26px; }
-.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
-.chip-empty { color: var(--muted); font-size: 12px; padding: 3px 0; }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 6px; }
+.pick { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; font-size: 13px; line-height: 1.3; min-width: 0; }
+.pick:hover { border-color: var(--accent); }
+.pick.on { background: var(--accent-soft); border-color: var(--accent); }
+.pick input { accent-color: var(--accent); width: 16px; height: 16px; flex: none; margin: 0; }
+.pick-text { display: flex; flex-direction: column; min-width: 0; }
+.pick-sub { color: var(--muted); font-size: 11px; }
 
 .table-scroll { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; }
@@ -133,8 +134,11 @@ tbody tr:last-child td { border-bottom: 0; }
 td .sub { display: block; color: var(--muted); font-size: 11px; }
 tfoot td { font-weight: 600; border-top: 1px solid var(--line); border-bottom: 0; }
 .field { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; width: 76px; text-align: right; font-family: var(--font-num); }
+.field-sm { width: 62px; }
+.field-md { width: 74px; }
 select.field { width: auto; text-align: left; font-family: var(--font-body); }
 .field:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+td.dim { color: var(--muted); }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
 .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -166,18 +170,22 @@ details.panel[open] > summary { margin-bottom: 12px; }
 .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px 16px; }
 .form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
 .form-grid .field { width: 100%; text-align: left; }
+.check { flex-direction: row !important; align-items: center; gap: 8px !important; color: var(--fg) !important; font-size: 13px !important; grid-column: 1 / -1; }
+.check input { accent-color: var(--accent); width: 16px; height: 16px; }
+.adj-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.adj-row label { font-size: 13px; font-weight: 600; }
+.adj-row input[type=range] { flex: 1 1 200px; min-width: 0; accent-color: var(--accent); }
+.adj-unit { color: var(--muted); font-size: 12px; }
 .note { font-size: 12px; color: var(--muted); margin: 10px 0 0; max-width: 90ch; }
+.notice { font-size: 12px; background: var(--warn-bg); color: var(--warn); border-radius: 6px; padding: 8px 10px; margin: 0; }
 .footnotes { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; max-width: 100ch; }
 .footnotes p { margin: 0; }
-a { color: var(--accent); }
 @media (max-width: 520px) {
   h1 { font-size: 21px; }
   .kpi-value { font-size: 24px; }
-  .year { grid-template-columns: 1fr; }
-  .stepper { justify-self: start; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .btn, .stepper button { transition: background 0.12s ease; }
+  .btn, .stepper button, .pick { transition: background 0.12s ease, border-color 0.12s ease; }
 }
 </style>
 
@@ -185,15 +193,15 @@ a { color: var(--accent); }
   <header>
     <div class="eyebrow">IFCE Campus Canindé · Portaria SETEC nº 146/2021</div>
     <h1>Planejador de oferta de cursos técnicos integrados</h1>
-    <p class="lede">Escolha quantos cursos abrir em 2028, 2029 e 2030 e veja como muda o percentual de matrículas equivalentes em cursos técnicos, licenciaturas e demais cursos.</p>
+    <p class="lede">Marque os cursos que deseja abrir em 2028, 2029 e 2030 e veja como muda o percentual de matrículas equivalentes em cursos técnicos, licenciaturas e demais cursos.</p>
   </header>
 
   <div class="layout">
     <div class="col">
       <section class="panel" aria-labelledby="h-plan">
         <div class="panel-head">
-          <h2 id="h-plan">Plano de implantação</h2>
-          <span class="hint">Os cursos entram na ordem de maior FEC</span>
+          <h2 id="h-plan">Cursos a implantar em cada ano</h2>
+          <span class="hint">Um curso pode ser aberto em apenas um ano</span>
         </div>
         <div class="presets" id="presets" role="group" aria-label="Cenários prontos"></div>
         <div class="years" id="years" style="margin-top:12px"></div>
@@ -201,33 +209,74 @@ a { color: var(--accent); }
 
       <section class="panel" aria-labelledby="h-cursos">
         <div class="panel-head">
-          <h2 id="h-cursos">Cursos candidatos</h2>
-          <span class="hint">Vagas por ano e ano de início</span>
+          <h2 id="h-cursos">Parâmetros de cada curso</h2>
+          <span class="hint">FECH = carga horária ÷ (duração × 800)</span>
         </div>
         <div class="table-scroll">
           <table id="tb-cursos">
-            <thead><tr><th>Curso</th><th>FEC</th><th>Vagas/ano</th><th>Início</th><th>Mateq pleno</th></tr></thead>
+            <thead><tr><th>Curso</th><th>FEC</th><th>Carga horária (h)</th><th>Duração (anos)</th><th>FECH</th><th>Vagas/ano</th><th>Início</th><th>Mateq pleno</th></tr></thead>
             <tbody></tbody>
-            <tfoot><tr><td>Total</td><td></td><td id="f-vagas"></td><td></td><td id="f-mateq"></td></tr></tfoot>
+            <tfoot><tr><td>Total dos cursos escolhidos</td><td></td><td></td><td></td><td></td><td id="f-vagas"></td><td></td><td id="f-mateq"></td></tr></tfoot>
           </table>
         </div>
-        <p class="note">Mateq pleno = vagas × duração × FECH × FEC, com todas as turmas em andamento.</p>
+        <p class="note" id="fech-note"></p>
+      </section>
+
+      <section class="panel" aria-labelledby="h-adj">
+        <div class="panel-head">
+          <h2 id="h-adj">Ajuste das MEq atuais</h2>
+          <span class="hint">Simula crescimento ou redução dos cursos já existentes</span>
+        </div>
+        <div class="adj-row">
+          <label for="adj-g">Ajuste geral</label>
+          <input type="range" id="adj-g" min="-50" max="50" step="1" value="0">
+          <span style="display:inline-flex;align-items:center;gap:6px">
+            <input class="field field-sm num" type="number" id="adj-gn" min="-100" max="300" step="1" value="0" inputmode="decimal" aria-label="Ajuste geral em porcentagem">
+            <span class="adj-unit">%</span>
+          </span>
+          <button class="btn" type="button" id="btn-adj0">Zerar ajustes</button>
+        </div>
+        <div class="table-scroll">
+          <table id="tb-adj">
+            <thead><tr><th>Grupo atual</th><th>MEq base</th><th>Ajuste do grupo (%)</th><th>Fator total</th><th>MEq ajustada</th></tr></thead>
+            <tbody>
+              <tr><td>Técnico (integrado + subsequente)</td><td class="num" id="a-b-tec"></td>
+                <td><input class="field field-sm num" type="number" id="adj-tec" min="-100" max="300" step="1" value="0" inputmode="decimal" aria-label="Ajuste do técnico em porcentagem"></td>
+                <td class="num" id="a-f-tec"></td><td class="num" id="a-m-tec"></td></tr>
+              <tr><td>Licenciatura</td><td class="num" id="a-b-lic"></td>
+                <td><input class="field field-sm num" type="number" id="adj-lic" min="-100" max="300" step="1" value="0" inputmode="decimal" aria-label="Ajuste da licenciatura em porcentagem"></td>
+                <td class="num" id="a-f-lic"></td><td class="num" id="a-m-lic"></td></tr>
+              <tr><td>Demais (pós, tecnólogos, FIC)</td><td class="num" id="a-b-out"></td>
+                <td><input class="field field-sm num" type="number" id="adj-out" min="-100" max="300" step="1" value="0" inputmode="decimal" aria-label="Ajuste dos demais cursos em porcentagem"></td>
+                <td class="num" id="a-f-out"></td><td class="num" id="a-m-out"></td></tr>
+            </tbody>
+            <tfoot><tr><td>Total do campus</td><td class="num" id="a-b-tot"></td><td></td><td class="num" id="a-f-tot"></td><td class="num" id="a-m-tot"></td></tr></tfoot>
+          </table>
+        </div>
+        <p class="note">Fator total = (1 + ajuste geral) × (1 + ajuste do grupo). Exemplo: ajuste geral de +10% e licenciatura de −20% resulta em fator 0,88 na licenciatura. As MEq ajustadas substituem as atuais em todos os cálculos.</p>
       </section>
 
       <details class="panel" open>
         <summary>Premissas</summary>
         <div class="form-grid">
-          <label for="in-fech">FECH (fator de equiparação de carga horária)
+          <label class="check" for="in-auto">
+            <input type="checkbox" id="in-auto" checked>
+            Calcular o FECH de cada curso pela carga horária e pela duração
+          </label>
+          <label for="in-fech">FECH fixo (usado quando o cálculo estiver desligado)
             <input class="field num" id="in-fech" type="number" step="0.01" min="0" inputmode="decimal">
           </label>
-          <label for="in-dur">Duração do curso (anos)
-            <input class="field num" id="in-dur" type="number" step="1" min="1" max="6" inputmode="numeric">
-          </label>
           <label for="in-vp">Vagas anuais padrão
-            <span style="display:flex;gap:6px">
-              <input class="field num" id="in-vp" type="number" step="5" min="0" inputmode="numeric" style="width:90px">
-              <button class="btn" id="btn-vp" type="button">Aplicar a todos</button>
-            </span>
+            <input class="field num" id="in-vp" type="number" step="5" min="0" inputmode="numeric">
+          </label>
+          <label for="in-cp">Carga horária padrão (h)
+            <input class="field num" id="in-cp" type="number" step="100" min="0" inputmode="numeric">
+          </label>
+          <label for="in-dp">Duração padrão (anos)
+            <input class="field num" id="in-dp" type="number" step="1" min="1" max="6" inputmode="numeric">
+          </label>
+          <label>Aplicar os padrões
+            <button class="btn" id="btn-vp" type="button">Aplicar a todos os cursos</button>
           </label>
           <label for="in-btec">MEq atual: técnico (integrado + subsequente)
             <input class="field num" id="in-btec" type="number" step="0.01" min="0" inputmode="decimal">
@@ -245,14 +294,15 @@ a { color: var(--accent); }
             <input class="field num" id="in-mlic" type="number" step="1" min="0" max="100" inputmode="decimal">
           </label>
         </div>
-        <p class="note">O art. 2º, §1º da Portaria 146/2021 define FECH = 1 para cursos que não são de qualificação profissional (FIC). O valor 1,25 foi informado pela instituição para 3.200 horas; altere aqui para comparar.</p>
+        <p class="note">O art. 2º, §1º da Portaria 146/2021 define FECH = 1 para cursos que não são de qualificação profissional (FIC). Os padrões de carga horária e duração valem para os cursos novos; cada curso pode ser ajustado na tabela.</p>
       </details>
     </div>
 
     <div class="col">
-      <section aria-labelledby="h-res" id="res-section" style="display:flex;flex-direction:column;gap:12px">
+      <section aria-labelledby="h-res" style="display:flex;flex-direction:column;gap:12px">
         <h2 id="h-res" class="eyebrow">Resultado em regime pleno</h2>
         <div class="kpis" id="kpis" aria-live="polite"></div>
+        <p class="notice" id="adj-note" hidden></p>
       </section>
 
       <section class="panel" aria-labelledby="h-chart">
@@ -289,7 +339,7 @@ a { color: var(--accent); }
 
   <footer class="footnotes">
     <p>FEC de cada curso: Anexo II da Portaria SETEC nº 146, de 25 de março de 2021. A tabela pode ser revista a cada dois anos, então confirme os valores vigentes.</p>
-    <p>Mateq = matrículas × FECH × FEC. Metas da Lei nº 11.892/2008, art. 8º: mínimo de 50% das vagas em cursos técnicos de nível médio e 20% em licenciaturas. Os cursos já existentes são mantidos constantes e não há desconto de evasão ou retenção.</p>
+    <p>Mateq = matrículas × FECH × FEC. Metas da Lei nº 11.892/2008, art. 8º: mínimo de 50% das vagas em cursos técnicos de nível médio e 20% em licenciaturas. Os cursos já existentes seguem constantes (com o ajuste informado) e não há desconto de evasão ou retenção.</p>
     <p>Confirme no Catálogo Nacional de Cursos Técnicos a oferta de cada curso na forma integrada, em especial Tradução e Interpretação de Libras e Produção de Áudio e Vídeo.</p>
   </footer>
 </div>
@@ -306,6 +356,7 @@ a { color: var(--accent); }
   ];
   var PLAN_YEARS = [2028, 2029, 2030];
   var BASE_YEAR = 2027;
+  var MIN_LAST_YEAR = 2033;
 
   var PRESETS = [
     { id: 'um', nome: '1 curso por ano', plan: { 2028: ['av'], 2029: ['ds'], 2030: ['rc'] }, vagas: {} },
@@ -317,12 +368,16 @@ a { color: var(--accent); }
   ];
 
   var state = {
-    fech: 1.25, dur: 3, vp: 40,
+    auto: true, fech: 1.25,
+    vp: 40, cp: 3200, dp: 3,
     base: { tec: 248.48, lic: 874, out: 452.2 },
+    adj: { g: 0, tec: 0, lic: 0, out: 0 },
     meta: { tec: 50, lic: 20 },
-    vagas: {}, year: {}
+    vagas: {}, ch: {}, dur: {}, year: {}
   };
-  COURSES.forEach(function (c) { state.vagas[c.id] = 40; state.year[c.id] = null; });
+  COURSES.forEach(function (c) {
+    state.vagas[c.id] = state.vp; state.ch[c.id] = state.cp; state.dur[c.id] = state.dp; state.year[c.id] = null;
+  });
 
   function $(id) { return document.getElementById(id); }
   function num(v, d) { var n = parseFloat(v); return isFinite(n) ? n : d; }
@@ -333,55 +388,59 @@ a { color: var(--accent); }
   function pct(n) { return fmt(n * 100, 1) + '%'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-  function applyPreset(p) {
-    COURSES.forEach(function (c) { state.year[c.id] = null; state.vagas[c.id] = state.vp; });
-    PLAN_YEARS.forEach(function (y) { (p.plan[y] || []).forEach(function (id) { state.year[id] = y; }); });
-    Object.keys(p.vagas).forEach(function (id) { state.vagas[id] = p.vagas[id]; });
-    syncInputs();
-    update();
+  /* ---------- Cálculos ---------- */
+  function fechCalc(c) { return state.ch[c.id] / (Math.max(1, state.dur[c.id]) * 800); }
+  function fechOf(c) { return state.auto ? fechCalc(c) : state.fech; }
+  function factor(k) { return Math.max(0, (1 + state.adj.g / 100) * (1 + state.adj[k] / 100)); }
+  function adjBase() {
+    return { tec: state.base.tec * factor('tec'), lic: state.base.lic * factor('lic'), out: state.base.out * factor('out') };
   }
-
+  function adjActive() { return state.adj.g !== 0 || state.adj.tec !== 0 || state.adj.lic !== 0 || state.adj.out !== 0; }
   function coursesIn(y) { return COURSES.filter(function (c) { return state.year[c.id] === y; }); }
-
-  function lastYear() { return PLAN_YEARS[PLAN_YEARS.length - 1] + state.dur; }
-  function fullYear() { return PLAN_YEARS[PLAN_YEARS.length - 1] + state.dur - 1; }
+  function assigned() { return COURSES.filter(function (c) { return state.year[c.id]; }); }
+  function endYear() {
+    var a = assigned();
+    if (!a.length) return PLAN_YEARS[PLAN_YEARS.length - 1] + state.dp - 1;
+    return Math.max.apply(null, a.map(function (c) { return state.year[c.id] + state.dur[c.id] - 1; }));
+  }
+  function lastYear() { return Math.max(endYear() + 1, MIN_LAST_YEAR); }
 
   function project() {
-    var rows = [];
+    var B = adjBase(), rows = [];
     for (var y = BASE_YEAR; y <= lastYear(); y++) {
       var mat = 0, novos = 0;
       COURSES.forEach(function (c) {
         var s = state.year[c.id];
         if (s && y >= s) {
-          var m = Math.min(y - s + 1, state.dur) * state.vagas[c.id];
+          var m = Math.min(y - s + 1, state.dur[c.id]) * state.vagas[c.id];
           mat += m;
-          novos += m * state.fech * c.fec;
+          novos += m * fechOf(c) * c.fec;
         }
       });
-      var tec = state.base.tec + novos;
-      var total = tec + state.base.lic + state.base.out;
+      var tec = B.tec + novos;
+      var total = tec + B.lic + B.out;
       rows.push({
         y: y, mat: mat, novos: novos, tec: tec, total: total,
         pTec: total ? tec / total : 0,
-        pLic: total ? state.base.lic / total : 0,
-        pOut: total ? state.base.out / total : 0
+        pLic: total ? B.lic / total : 0,
+        pOut: total ? B.out / total : 0
       });
     }
     return rows;
   }
 
   function steady(plan, vagasOver) {
-    var novos = 0, vagas = 0, cursos = 0, fecSum = 0;
+    var B = adjBase(), novos = 0, vagas = 0, cursos = 0;
     COURSES.forEach(function (c) {
-      var assigned = false;
-      PLAN_YEARS.forEach(function (y) { if ((plan[y] || []).indexOf(c.id) >= 0) assigned = true; });
-      if (!assigned) return;
+      var inPlan = false;
+      PLAN_YEARS.forEach(function (y) { if ((plan[y] || []).indexOf(c.id) >= 0) inPlan = true; });
+      if (!inPlan) return;
       var v = (vagasOver && vagasOver[c.id] !== undefined) ? vagasOver[c.id] : state.vp;
-      novos += v * state.dur * state.fech * c.fec;
-      vagas += v; cursos += 1; fecSum += c.fec;
+      novos += v * state.dur[c.id] * fechOf(c) * c.fec;
+      vagas += v; cursos += 1;
     });
-    var tec = state.base.tec + novos;
-    var total = tec + state.base.lic + state.base.out;
+    var tec = B.tec + novos;
+    var total = tec + B.lic + B.out;
     return { novos: novos, vagas: vagas, cursos: cursos, pTec: total ? tec / total : 0 };
   }
 
@@ -389,6 +448,14 @@ a { color: var(--accent); }
     var plan = {};
     PLAN_YEARS.forEach(function (y) { plan[y] = coursesIn(y).map(function (c) { return c.id; }); });
     return plan;
+  }
+
+  function applyPreset(p) {
+    COURSES.forEach(function (c) { state.year[c.id] = null; state.vagas[c.id] = state.vp; });
+    PLAN_YEARS.forEach(function (y) { (p.plan[y] || []).forEach(function (id) { state.year[id] = y; }); });
+    Object.keys(p.vagas).forEach(function (id) { state.vagas[id] = p.vagas[id]; });
+    syncInputs();
+    update();
   }
 
   /* ---------- Renderização ---------- */
@@ -400,21 +467,26 @@ a { color: var(--accent); }
 
   function renderYears() {
     var active = document.activeElement && document.activeElement.id;
-    var unassigned = COURSES.filter(function (c) { return !state.year[c.id]; }).length;
+    var free = COURSES.filter(function (c) { return !state.year[c.id]; }).length;
     $('years').innerHTML = PLAN_YEARS.map(function (y) {
       var list = coursesIn(y);
-      var chips = list.length
-        ? list.map(function (c) { return '<span class="chip">' + esc(c.nome) + '</span>'; }).join('')
-        : '<span class="chip-empty">Nenhum curso neste ano</span>';
+      var picks = COURSES.map(function (c) {
+        var on = state.year[c.id] === y;
+        var other = state.year[c.id] && !on ? '<span class="pick-sub">Hoje em ' + state.year[c.id] + '; marcar move para ' + y + '</span>' : '';
+        return '<label class="pick' + (on ? ' on' : '') + '" for="p-' + y + '-' + c.id + '">' +
+          '<input type="checkbox" id="p-' + y + '-' + c.id + '" data-pick="' + c.id + '" data-pyear="' + y + '"' + (on ? ' checked' : '') + '>' +
+          '<span class="pick-text"><span>' + esc(c.nome) + '</span>' + other + '</span></label>';
+      }).join('');
       return '<div class="year">' +
-        '<div class="year-label">' + y + '</div>' +
-        '<div class="stepper" role="group" aria-label="Cursos em ' + y + '">' +
-        '<button type="button" id="dec-' + y + '" data-dec="' + y + '" aria-label="Remover um curso em ' + y + '"' + (list.length ? '' : ' disabled') + '>−</button>' +
+        '<div class="year-head">' +
+        '<span class="year-label">' + y + '</span>' +
+        '<div class="stepper" role="group" aria-label="Quantidade de cursos em ' + y + '">' +
+        '<button type="button" id="dec-' + y + '" data-dec="' + y + '" aria-label="Remover o último curso de ' + y + '"' + (list.length ? '' : ' disabled') + '>−</button>' +
         '<span class="count" aria-live="polite">' + list.length + '</span>' +
-        '<button type="button" id="inc-' + y + '" data-inc="' + y + '" aria-label="Adicionar um curso em ' + y + '"' + (unassigned ? '' : ' disabled') + '>+</button>' +
+        '<button type="button" id="inc-' + y + '" data-inc="' + y + '" aria-label="Adicionar o próximo curso em ' + y + '"' + (free ? '' : ' disabled') + '>+</button>' +
         '<span class="unit">' + (list.length === 1 ? 'curso' : 'cursos') + '</span>' +
-        '</div>' +
-        '<div class="chips">' + chips + '</div>' +
+        '</div></div>' +
+        '<div class="picks" role="group" aria-label="Cursos a abrir em ' + y + '">' + picks + '</div>' +
         '</div>';
     }).join('');
     if (active) { var el = $(active); if (el && !el.disabled) el.focus(); }
@@ -426,7 +498,10 @@ a { color: var(--accent); }
       return '<tr>' +
         '<td>' + esc(c.nome) + '<span class="sub">' + esc(c.eixo) + '</span></td>' +
         '<td class="num">' + fmt(c.fec, 3) + '</td>' +
-        '<td><input class="field num" type="number" min="0" step="5" inputmode="numeric" id="v-' + c.id + '" data-vagas="' + c.id + '" aria-label="Vagas por ano: ' + esc(c.nome) + '"></td>' +
+        '<td><input class="field field-md num" type="number" min="0" step="100" inputmode="numeric" id="ch-' + c.id + '" data-ch="' + c.id + '" aria-label="Carga horária: ' + esc(c.nome) + '"></td>' +
+        '<td><input class="field field-sm num" type="number" min="1" max="6" step="1" inputmode="numeric" id="du-' + c.id + '" data-dur="' + c.id + '" aria-label="Duração em anos: ' + esc(c.nome) + '"></td>' +
+        '<td class="num" id="fe-' + c.id + '"></td>' +
+        '<td><input class="field field-sm num" type="number" min="0" step="5" inputmode="numeric" id="v-' + c.id + '" data-vagas="' + c.id + '" aria-label="Vagas por ano: ' + esc(c.nome) + '"></td>' +
         '<td><select class="field" id="s-' + c.id + '" data-year="' + c.id + '" aria-label="Ano de início: ' + esc(c.nome) + '">' + opts + '</select></td>' +
         '<td class="num" id="m-' + c.id + '"></td>' +
         '</tr>';
@@ -436,16 +511,33 @@ a { color: var(--accent); }
   function renderCourseTable() {
     var tv = 0, tm = 0;
     COURSES.forEach(function (c) {
-      var sel = $('s-' + c.id);
-      sel.value = state.year[c.id] ? String(state.year[c.id]) : '';
-      var m = state.year[c.id] ? state.vagas[c.id] * state.dur * state.fech * c.fec : 0;
+      $('s-' + c.id).value = state.year[c.id] ? String(state.year[c.id]) : '';
+      var f = fechOf(c);
+      var cell = $('fe-' + c.id);
+      cell.innerHTML = fmt(f, 3) + (state.auto ? '' : '<span class="sub">calc. ' + fmt(fechCalc(c), 3) + '</span>');
+      var m = state.year[c.id] ? state.vagas[c.id] * state.dur[c.id] * f * c.fec : 0;
       $('m-' + c.id).textContent = state.year[c.id] ? fmt(m, 2) : '–';
       if (state.year[c.id]) { tv += state.vagas[c.id]; tm += m; }
     });
-    $('f-vagas').textContent = fmt(tv, 0);
-    $('f-vagas').className = 'num';
-    $('f-mateq').textContent = fmt(tm, 2);
-    $('f-mateq').className = 'num';
+    $('f-vagas').textContent = fmt(tv, 0); $('f-vagas').className = 'num';
+    $('f-mateq').textContent = fmt(tm, 2); $('f-mateq').className = 'num';
+    $('fech-note').textContent = state.auto
+      ? 'FECH calculado = carga horária ÷ (duração × 800). Com 3.200 h em 3 anos o resultado é 1,333; para chegar a 1,25 use 3.000 h em 3 anos, ou desligue o cálculo em Premissas para usar um FECH fixo.'
+      : 'Cálculo desligado: todos os cursos usam o FECH fixo de ' + fmt(state.fech, 3) + '. A coluna mostra o valor calculado em cinza, só para comparação.';
+  }
+
+  function renderAdj() {
+    var B = adjBase();
+    var keys = ['tec', 'lic', 'out'];
+    keys.forEach(function (k) {
+      $('a-b-' + k).textContent = fmt(state.base[k], 2);
+      $('a-f-' + k).textContent = '×' + fmt(factor(k), 3);
+      $('a-m-' + k).textContent = fmt(B[k], 2);
+    });
+    var bt = state.base.tec + state.base.lic + state.base.out, at = B.tec + B.lic + B.out;
+    $('a-b-tot').textContent = fmt(bt, 2);
+    $('a-m-tot').textContent = fmt(at, 2);
+    $('a-f-tot').textContent = '×' + fmt(bt ? at / bt : 0, 3);
   }
 
   function pill(ok, yes, no) {
@@ -453,19 +545,18 @@ a { color: var(--accent); }
   }
 
   function renderKpis(rows) {
-    var r = rows[rows.length - 2] || rows[rows.length - 1];
-    var fy = fullYear();
+    var fy = endYear(), r = rows[rows.length - 1], B = adjBase();
     rows.forEach(function (x) { if (x.y === fy) r = x; });
     var metaT = state.meta.tec / 100, metaL = state.meta.lic / 100;
     var okT = r.pTec >= metaT - 1e-9, okL = r.pLic >= metaL - 1e-9;
-    var ativos = COURSES.filter(function (c) { return state.year[c.id]; });
+    var ativos = assigned();
     var vagas = ativos.reduce(function (s, c) { return s + state.vagas[c.id]; }, 0);
-    var falta = 0, vagasExtra = 0, fecRef = 0;
+    var falta = 0, vagasExtra = 0;
     if (!okT && metaT < 1) {
-      var need = (state.base.lic + state.base.out) * metaT / (1 - metaT);
+      var need = (B.lic + B.out) * metaT / (1 - metaT);
       falta = Math.max(0, need - r.tec);
-      fecRef = ativos.length ? ativos.reduce(function (s, c) { return s + c.fec; }, 0) / ativos.length : 1.05;
-      var porVaga = state.dur * state.fech * fecRef;
+      var ref = ativos.length ? ativos : [COURSES[1]];
+      var porVaga = ref.reduce(function (s, c) { return s + state.dur[c.id] * fechOf(c) * c.fec; }, 0) / ref.length;
       vagasExtra = porVaga ? Math.ceil(falta / porVaga) : 0;
     }
     var k = [];
@@ -479,10 +570,17 @@ a { color: var(--accent); }
       k.push('<div class="kpi"><span class="kpi-label">Para atingir a meta</span><span class="kpi-value">0</span><span class="kpi-sub">Meta de técnico alcançada com este plano</span></div>');
     } else {
       k.push('<div class="kpi"><span class="kpi-label">Falta para a meta do técnico</span><span class="kpi-value">' + fmt(falta, 1) + '</span>' +
-        '<span class="kpi-sub">MEq. Equivale a cerca de ' + fmt(vagasExtra, 0) + ' vagas/ano a mais em cursos de FEC médio ' + fmt(fecRef, 3) + '</span></div>');
+        '<span class="kpi-sub">MEq. Equivale a cerca de ' + fmt(vagasExtra, 0) + ' vagas/ano a mais, na média dos cursos escolhidos</span></div>');
     }
     $('kpis').innerHTML = k.join('');
     $('h-res').textContent = 'Resultado em regime pleno (' + fy + ')';
+    var note = $('adj-note');
+    if (adjActive()) {
+      note.hidden = false;
+      note.textContent = 'MEq atuais ajustadas: técnico ' + fmt(B.tec, 1) + ', licenciatura ' + fmt(B.lic, 1) + ', demais ' + fmt(B.out, 1) + ' (base: ' + fmt(state.base.tec, 1) + ', ' + fmt(state.base.lic, 1) + ', ' + fmt(state.base.out, 1) + ').';
+    } else {
+      note.hidden = true;
+    }
   }
 
   function renderChart(rows) {
@@ -511,7 +609,7 @@ a { color: var(--accent); }
         }
         acc += sg.p;
       });
-      s += '<text class="ax" x="' + (x + bw / 2).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + (i === 0 ? 'Atual' : r.y) + '</text>';
+      s += '<text class="ax" x="' + (x + bw / 2).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + (i === 0 ? (adjActive() ? 'Atual aj.' : 'Atual') : r.y) + '</text>';
     });
     var my = Y(state.meta.tec / 100);
     s += '<line class="meta" x1="' + L + '" x2="' + (W - R + 4) + '" y1="' + my + '" y2="' + my + '"/>';
@@ -540,9 +638,7 @@ a { color: var(--accent); }
 
   function renderCmp() {
     var metaT = state.meta.tec / 100;
-    var cur = steady(currentPlan(), state.vagas);
     function row(nome, r, me, presetId) {
-      var plano = '';
       return '<tr class="' + (me ? 'me' : '') + '"><td>' + esc(nome) + '</td>' +
         '<td class="num">' + r.cursos + '</td>' +
         '<td class="num">' + fmt(r.vagas, 0) + '</td>' +
@@ -552,28 +648,40 @@ a { color: var(--accent); }
         '<td>' + (presetId ? '<button type="button" class="btn" data-preset="' + presetId + '">Aplicar</button>' : '') + '</td></tr>';
     }
     var h = '<thead><tr><th>Cenário</th><th>Cursos</th><th>Vagas/ano</th><th>MEq novos</th><th>% técnico</th><th>Meta</th><th></th></tr></thead><tbody>';
-    h += row('Seu cenário', cur, true, null);
+    h += row('Seu cenário', steady(currentPlan(), state.vagas), true, null);
     PRESETS.forEach(function (p) { h += row(p.nome, steady(p.plan, p.vagas), false, p.id); });
     h += '</tbody>';
     $('tb-cmp').innerHTML = h;
   }
 
   function syncInputs() {
+    $('in-auto').checked = state.auto;
     $('in-fech').value = state.fech;
-    $('in-dur').value = state.dur;
     $('in-vp').value = state.vp;
+    $('in-cp').value = state.cp;
+    $('in-dp').value = state.dp;
     $('in-btec').value = state.base.tec;
     $('in-blic').value = state.base.lic;
     $('in-bout').value = state.base.out;
     $('in-mtec').value = state.meta.tec;
     $('in-mlic').value = state.meta.lic;
-    COURSES.forEach(function (c) { $('v-' + c.id).value = state.vagas[c.id]; });
+    $('adj-g').value = Math.max(-50, Math.min(50, state.adj.g));
+    $('adj-gn').value = state.adj.g;
+    $('adj-tec').value = state.adj.tec;
+    $('adj-lic').value = state.adj.lic;
+    $('adj-out').value = state.adj.out;
+    COURSES.forEach(function (c) {
+      $('v-' + c.id).value = state.vagas[c.id];
+      $('ch-' + c.id).value = state.ch[c.id];
+      $('du-' + c.id).value = state.dur[c.id];
+    });
   }
 
   function update() {
     var rows = project();
     renderYears();
     renderCourseTable();
+    renderAdj();
     renderKpis(rows);
     renderChart(rows);
     renderProj(rows);
@@ -596,7 +704,10 @@ a { color: var(--accent); }
       var list = coursesIn(yy);
       if (list.length) { state.year[list[list.length - 1].id] = null; update(); }
     } else if (t.id === 'btn-vp') {
-      COURSES.forEach(function (c) { state.vagas[c.id] = state.vp; });
+      COURSES.forEach(function (c) { state.vagas[c.id] = state.vp; state.ch[c.id] = state.cp; state.dur[c.id] = state.dp; });
+      syncInputs(); update();
+    } else if (t.id === 'btn-adj0') {
+      state.adj = { g: 0, tec: 0, lic: 0, out: 0 };
       syncInputs(); update();
     }
   });
@@ -606,21 +717,39 @@ a { color: var(--accent); }
     if (t.dataset && t.dataset.year) {
       state.year[t.dataset.year] = t.value ? parseInt(t.value, 10) : null;
       update();
+    } else if (t.dataset && t.dataset.pick) {
+      var y = parseInt(t.dataset.pyear, 10);
+      if (t.checked) { state.year[t.dataset.pick] = y; }
+      else if (state.year[t.dataset.pick] === y) { state.year[t.dataset.pick] = null; }
+      update();
+    } else if (t.id === 'in-auto') {
+      state.auto = t.checked;
+      update();
     }
   });
 
   document.addEventListener('input', function (e) {
     var t = e.target;
-    if (t.dataset && t.dataset.vagas) { state.vagas[t.dataset.vagas] = Math.max(0, num(t.value, 0)); update(); return; }
+    if (t.dataset) {
+      if (t.dataset.vagas) { state.vagas[t.dataset.vagas] = Math.max(0, num(t.value, 0)); update(); return; }
+      if (t.dataset.ch) { state.ch[t.dataset.ch] = Math.max(0, num(t.value, 0)); update(); return; }
+      if (t.dataset.dur) { state.dur[t.dataset.dur] = Math.min(6, Math.max(1, Math.round(num(t.value, 3)))); update(); return; }
+    }
     switch (t.id) {
       case 'in-fech': state.fech = Math.max(0, num(t.value, 0)); break;
-      case 'in-dur': state.dur = Math.min(6, Math.max(1, Math.round(num(t.value, 3)))); break;
       case 'in-vp': state.vp = Math.max(0, num(t.value, 0)); return;
+      case 'in-cp': state.cp = Math.max(0, num(t.value, 0)); return;
+      case 'in-dp': state.dp = Math.min(6, Math.max(1, Math.round(num(t.value, 3)))); update(); return;
       case 'in-btec': state.base.tec = Math.max(0, num(t.value, 0)); break;
       case 'in-blic': state.base.lic = Math.max(0, num(t.value, 0)); break;
       case 'in-bout': state.base.out = Math.max(0, num(t.value, 0)); break;
       case 'in-mtec': state.meta.tec = Math.min(100, Math.max(0, num(t.value, 0))); break;
       case 'in-mlic': state.meta.lic = Math.min(100, Math.max(0, num(t.value, 0))); break;
+      case 'adj-g': state.adj.g = num(t.value, 0); $('adj-gn').value = state.adj.g; break;
+      case 'adj-gn': state.adj.g = Math.max(-100, num(t.value, 0)); $('adj-g').value = Math.max(-50, Math.min(50, state.adj.g)); break;
+      case 'adj-tec': state.adj.tec = Math.max(-100, num(t.value, 0)); break;
+      case 'adj-lic': state.adj.lic = Math.max(-100, num(t.value, 0)); break;
+      case 'adj-out': state.adj.out = Math.max(-100, num(t.value, 0)); break;
       default: return;
     }
     update();
@@ -631,5 +760,3 @@ a { color: var(--accent); }
   applyPreset(PRESETS.filter(function (p) { return p.id === 'dois'; })[0]);
 })();
 </script>
-
-</body></html>
