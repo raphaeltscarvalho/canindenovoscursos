@@ -1,0 +1,635 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Planejador de Oferta Canindé</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: ferramenta em duas colunas (plano e cursos à esquerda, resultados à direita); uma coluna no celular. */
+:root {
+  --bg: #F4F6F3;
+  --surface: #FFFFFF;
+  --surface-2: #EDF1EC;
+  --fg: #16211A;
+  --muted: #566559;
+  --line: #D6DDD6;
+  --accent: #1B7443;
+  --accent-soft: #DDEFE4;
+  --on-accent: #FFFFFF;
+  --c-tec: #1B7443;
+  --on-tec: #FFFFFF;
+  --c-lic: #3A6DB4;
+  --on-lic: #FFFFFF;
+  --c-out: #B7C0B8;
+  --on-out: #16211A;
+  --good: #1B7443;
+  --good-bg: #DDEFE4;
+  --warn: #8F4F06;
+  --warn-bg: #FBEBD3;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-num: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1511;
+    --surface: #161F19;
+    --surface-2: #1D2921;
+    --fg: #E5EDE7;
+    --muted: #9BAA9F;
+    --line: #2B382F;
+    --accent: #55C184;
+    --accent-soft: #1C3527;
+    --on-accent: #0B1A12;
+    --c-tec: #55C184;
+    --on-tec: #0B1A12;
+    --c-lic: #7AA3E6;
+    --on-lic: #0B1424;
+    --c-out: #55655A;
+    --on-out: #E5EDE7;
+    --good: #55C184;
+    --good-bg: #1C3527;
+    --warn: #EBB166;
+    --warn-bg: #3A2A12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1511;
+  --surface: #161F19;
+  --surface-2: #1D2921;
+  --fg: #E5EDE7;
+  --muted: #9BAA9F;
+  --line: #2B382F;
+  --accent: #55C184;
+  --accent-soft: #1C3527;
+  --on-accent: #0B1A12;
+  --c-tec: #55C184;
+  --on-tec: #0B1A12;
+  --c-lic: #7AA3E6;
+  --on-lic: #0B1424;
+  --c-out: #55655A;
+  --on-out: #E5EDE7;
+  --good: #55C184;
+  --good-bg: #1C3527;
+  --warn: #EBB166;
+  --warn-bg: #3A2A12;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 40px;
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h1 { font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 15px; font-weight: 600; }
+h3 { font-size: 13px; font-weight: 600; }
+.eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 70ch; }
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (min-width: 1040px) { .layout { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } }
+.col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; min-width: 0; }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+
+.btn { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 500; font-size: 13px; }
+.btn:hover { background: var(--surface-2); }
+.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn-primary:hover { background: var(--accent); filter: brightness(1.08); }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.years { display: flex; flex-direction: column; gap: 10px; }
+.year { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; align-items: center; padding: 10px 12px; background: var(--surface-2); border-radius: 6px; }
+.year-label { font-family: var(--font-num); font-size: 20px; font-weight: 500; }
+.stepper { display: inline-flex; align-items: center; gap: 8px; justify-self: end; }
+.stepper button { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: 16px; line-height: 1; }
+.stepper button:hover:not([disabled]) { background: var(--accent-soft); }
+.stepper button[disabled] { opacity: 0.35; cursor: not-allowed; }
+.stepper .count { min-width: 2ch; text-align: center; font-family: var(--font-num); font-size: 18px; font-weight: 500; }
+.stepper .unit { color: var(--muted); font-size: 12px; }
+.chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; min-height: 26px; }
+.chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+.chip-empty { color: var(--muted); font-size: 12px; padding: 3px 0; }
+
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+tbody tr:last-child td { border-bottom: 0; }
+td .sub { display: block; color: var(--muted); font-size: 11px; }
+tfoot td { font-weight: 600; border-top: 1px solid var(--line); border-bottom: 0; }
+.field { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; width: 76px; text-align: right; font-family: var(--font-num); }
+select.field { width: auto; text-align: left; font-family: var(--font-body); }
+.field:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.kpi-label { font-size: 12px; color: var(--muted); }
+.kpi-value { font-family: var(--font-num); font-size: 28px; font-weight: 500; line-height: 1.15; }
+.kpi-sub { font-size: 12px; color: var(--muted); }
+.pill { display: inline-block; align-self: flex-start; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.pill-good { background: var(--good-bg); color: var(--good); }
+.pill-warn { background: var(--warn-bg); color: var(--warn); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+.swatch.dash { background: none; border-top: 2px dashed var(--fg); height: 0; border-radius: 0; width: 16px; }
+svg.chart { width: 100%; height: auto; display: block; }
+svg.chart .ax { fill: var(--muted); font-family: var(--font-num); font-size: 11px; }
+svg.chart .grid { stroke: var(--line); stroke-width: 1; }
+svg.chart .meta { stroke: var(--fg); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg.chart .meta-label { fill: var(--fg); font-family: var(--font-num); font-size: 11px; }
+svg.chart .seg-label { font-family: var(--font-num); font-size: 11px; }
+
+.proj th:first-child, .proj td:first-child { position: sticky; left: 0; background: var(--surface); }
+.proj td.strong { font-weight: 600; }
+.cmp td:first-child { min-width: 170px; }
+.cmp tr.me td { background: var(--accent-soft); }
+
+details.panel > summary { cursor: pointer; font-weight: 600; font-size: 15px; list-style-position: inside; }
+details.panel[open] > summary { margin-bottom: 12px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px 16px; }
+.form-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.form-grid .field { width: 100%; text-align: left; }
+.note { font-size: 12px; color: var(--muted); margin: 10px 0 0; max-width: 90ch; }
+.footnotes { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; max-width: 100ch; }
+.footnotes p { margin: 0; }
+a { color: var(--accent); }
+@media (max-width: 520px) {
+  h1 { font-size: 21px; }
+  .kpi-value { font-size: 24px; }
+  .year { grid-template-columns: 1fr; }
+  .stepper { justify-self: start; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .stepper button { transition: background 0.12s ease; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">IFCE Campus Canindé · Portaria SETEC nº 146/2021</div>
+    <h1>Planejador de oferta de cursos técnicos integrados</h1>
+    <p class="lede">Escolha quantos cursos abrir em 2028, 2029 e 2030 e veja como muda o percentual de matrículas equivalentes em cursos técnicos, licenciaturas e demais cursos.</p>
+  </header>
+
+  <div class="layout">
+    <div class="col">
+      <section class="panel" aria-labelledby="h-plan">
+        <div class="panel-head">
+          <h2 id="h-plan">Plano de implantação</h2>
+          <span class="hint">Os cursos entram na ordem de maior FEC</span>
+        </div>
+        <div class="presets" id="presets" role="group" aria-label="Cenários prontos"></div>
+        <div class="years" id="years" style="margin-top:12px"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-cursos">
+        <div class="panel-head">
+          <h2 id="h-cursos">Cursos candidatos</h2>
+          <span class="hint">Vagas por ano e ano de início</span>
+        </div>
+        <div class="table-scroll">
+          <table id="tb-cursos">
+            <thead><tr><th>Curso</th><th>FEC</th><th>Vagas/ano</th><th>Início</th><th>Mateq pleno</th></tr></thead>
+            <tbody></tbody>
+            <tfoot><tr><td>Total</td><td></td><td id="f-vagas"></td><td></td><td id="f-mateq"></td></tr></tfoot>
+          </table>
+        </div>
+        <p class="note">Mateq pleno = vagas × duração × FECH × FEC, com todas as turmas em andamento.</p>
+      </section>
+
+      <details class="panel" open>
+        <summary>Premissas</summary>
+        <div class="form-grid">
+          <label for="in-fech">FECH (fator de equiparação de carga horária)
+            <input class="field num" id="in-fech" type="number" step="0.01" min="0" inputmode="decimal">
+          </label>
+          <label for="in-dur">Duração do curso (anos)
+            <input class="field num" id="in-dur" type="number" step="1" min="1" max="6" inputmode="numeric">
+          </label>
+          <label for="in-vp">Vagas anuais padrão
+            <span style="display:flex;gap:6px">
+              <input class="field num" id="in-vp" type="number" step="5" min="0" inputmode="numeric" style="width:90px">
+              <button class="btn" id="btn-vp" type="button">Aplicar a todos</button>
+            </span>
+          </label>
+          <label for="in-btec">MEq atual: técnico (integrado + subsequente)
+            <input class="field num" id="in-btec" type="number" step="0.01" min="0" inputmode="decimal">
+          </label>
+          <label for="in-blic">MEq atual: licenciatura
+            <input class="field num" id="in-blic" type="number" step="0.01" min="0" inputmode="decimal">
+          </label>
+          <label for="in-bout">MEq atual: demais (pós, tecnólogos, FIC)
+            <input class="field num" id="in-bout" type="number" step="0.01" min="0" inputmode="decimal">
+          </label>
+          <label for="in-mtec">Meta: técnico (% das MEq)
+            <input class="field num" id="in-mtec" type="number" step="1" min="0" max="100" inputmode="decimal">
+          </label>
+          <label for="in-mlic">Meta: licenciatura (% das MEq)
+            <input class="field num" id="in-mlic" type="number" step="1" min="0" max="100" inputmode="decimal">
+          </label>
+        </div>
+        <p class="note">O art. 2º, §1º da Portaria 146/2021 define FECH = 1 para cursos que não são de qualificação profissional (FIC). O valor 1,25 foi informado pela instituição para 3.200 horas; altere aqui para comparar.</p>
+      </details>
+    </div>
+
+    <div class="col">
+      <section aria-labelledby="h-res" id="res-section" style="display:flex;flex-direction:column;gap:12px">
+        <h2 id="h-res" class="eyebrow">Resultado em regime pleno</h2>
+        <div class="kpis" id="kpis" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-chart">
+        <div class="panel-head">
+          <h2 id="h-chart">Perfil do campus ao longo dos anos</h2>
+          <span class="hint">Percentual das matrículas equivalentes</span>
+        </div>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--c-tec)"></i>Técnico</span>
+          <span><i class="swatch" style="background:var(--c-lic)"></i>Licenciatura</span>
+          <span><i class="swatch" style="background:var(--c-out)"></i>Demais cursos</span>
+          <span><i class="swatch dash"></i>Meta do técnico</span>
+        </div>
+        <div id="chart"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-proj">
+        <div class="panel-head">
+          <h2 id="h-proj">Projeção ano a ano</h2>
+          <span class="hint">Cada curso soma uma turma por ano até completar a duração</span>
+        </div>
+        <div class="table-scroll"><table class="proj" id="tb-proj"></table></div>
+      </section>
+
+      <section class="panel" aria-labelledby="h-cmp">
+        <div class="panel-head">
+          <h2 id="h-cmp">Comparação de cenários</h2>
+          <span class="hint">Regime pleno, com suas premissas atuais</span>
+        </div>
+        <div class="table-scroll"><table class="cmp" id="tb-cmp"></table></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="footnotes">
+    <p>FEC de cada curso: Anexo II da Portaria SETEC nº 146, de 25 de março de 2021. A tabela pode ser revista a cada dois anos, então confirme os valores vigentes.</p>
+    <p>Mateq = matrículas × FECH × FEC. Metas da Lei nº 11.892/2008, art. 8º: mínimo de 50% das vagas em cursos técnicos de nível médio e 20% em licenciaturas. Os cursos já existentes são mantidos constantes e não há desconto de evasão ou retenção.</p>
+    <p>Confirme no Catálogo Nacional de Cursos Técnicos a oferta de cada curso na forma integrada, em especial Tradução e Interpretação de Libras e Produção de Áudio e Vídeo.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var COURSES = [
+    { id: 'av', nome: 'Produção de Áudio e Vídeo', eixo: 'Produção Cultural e Design', fec: 1.5 },
+    { id: 'ds', nome: 'Desenvolvimento de Sistemas', eixo: 'Informação e Comunicação', fec: 1.05 },
+    { id: 'rc', nome: 'Redes de Computadores', eixo: 'Informação e Comunicação', fec: 1.032 },
+    { id: 'hs', nome: 'Hospedagem', eixo: 'Turismo, Hospitalidade e Lazer', fec: 1.019 },
+    { id: 'tl', nome: 'Tradução e Interpretação de Libras', eixo: 'Desenvolvimento Educacional e Social', fec: 1.009 },
+    { id: 'ad', nome: 'Administração', eixo: 'Gestão e Negócios', fec: 1.008 }
+  ];
+  var PLAN_YEARS = [2028, 2029, 2030];
+  var BASE_YEAR = 2027;
+
+  var PRESETS = [
+    { id: 'um', nome: '1 curso por ano', plan: { 2028: ['av'], 2029: ['ds'], 2030: ['rc'] }, vagas: {} },
+    { id: 'tres', nome: '3, 2 e 1 cursos', plan: { 2028: ['av', 'ds', 'rc'], 2029: ['hs', 'tl'], 2030: ['ad'] }, vagas: {} },
+    { id: 'dois', nome: '2 cursos por ano', plan: { 2028: ['av', 'ds'], 2029: ['rc', 'hs'], 2030: ['tl', 'ad'] }, vagas: {} },
+    { id: 'tudo', nome: 'Todos em 2028', plan: { 2028: ['av', 'ds', 'rc', 'hs', 'tl', 'ad'] }, vagas: {} },
+    { id: 'meta', nome: '2 por ano, 80 vagas em Des. de Sistemas', plan: { 2028: ['av', 'ds'], 2029: ['rc', 'hs'], 2030: ['tl', 'ad'] }, vagas: { ds: 80 } },
+    { id: 'zero', nome: 'Sem novos cursos', plan: {}, vagas: {} }
+  ];
+
+  var state = {
+    fech: 1.25, dur: 3, vp: 40,
+    base: { tec: 248.48, lic: 874, out: 452.2 },
+    meta: { tec: 50, lic: 20 },
+    vagas: {}, year: {}
+  };
+  COURSES.forEach(function (c) { state.vagas[c.id] = 40; state.year[c.id] = null; });
+
+  function $(id) { return document.getElementById(id); }
+  function num(v, d) { var n = parseFloat(v); return isFinite(n) ? n : d; }
+  function fmt(n, d) {
+    if (d === undefined) d = 1;
+    return n.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+  }
+  function pct(n) { return fmt(n * 100, 1) + '%'; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function applyPreset(p) {
+    COURSES.forEach(function (c) { state.year[c.id] = null; state.vagas[c.id] = state.vp; });
+    PLAN_YEARS.forEach(function (y) { (p.plan[y] || []).forEach(function (id) { state.year[id] = y; }); });
+    Object.keys(p.vagas).forEach(function (id) { state.vagas[id] = p.vagas[id]; });
+    syncInputs();
+    update();
+  }
+
+  function coursesIn(y) { return COURSES.filter(function (c) { return state.year[c.id] === y; }); }
+
+  function lastYear() { return PLAN_YEARS[PLAN_YEARS.length - 1] + state.dur; }
+  function fullYear() { return PLAN_YEARS[PLAN_YEARS.length - 1] + state.dur - 1; }
+
+  function project() {
+    var rows = [];
+    for (var y = BASE_YEAR; y <= lastYear(); y++) {
+      var mat = 0, novos = 0;
+      COURSES.forEach(function (c) {
+        var s = state.year[c.id];
+        if (s && y >= s) {
+          var m = Math.min(y - s + 1, state.dur) * state.vagas[c.id];
+          mat += m;
+          novos += m * state.fech * c.fec;
+        }
+      });
+      var tec = state.base.tec + novos;
+      var total = tec + state.base.lic + state.base.out;
+      rows.push({
+        y: y, mat: mat, novos: novos, tec: tec, total: total,
+        pTec: total ? tec / total : 0,
+        pLic: total ? state.base.lic / total : 0,
+        pOut: total ? state.base.out / total : 0
+      });
+    }
+    return rows;
+  }
+
+  function steady(plan, vagasOver) {
+    var novos = 0, vagas = 0, cursos = 0, fecSum = 0;
+    COURSES.forEach(function (c) {
+      var assigned = false;
+      PLAN_YEARS.forEach(function (y) { if ((plan[y] || []).indexOf(c.id) >= 0) assigned = true; });
+      if (!assigned) return;
+      var v = (vagasOver && vagasOver[c.id] !== undefined) ? vagasOver[c.id] : state.vp;
+      novos += v * state.dur * state.fech * c.fec;
+      vagas += v; cursos += 1; fecSum += c.fec;
+    });
+    var tec = state.base.tec + novos;
+    var total = tec + state.base.lic + state.base.out;
+    return { novos: novos, vagas: vagas, cursos: cursos, pTec: total ? tec / total : 0 };
+  }
+
+  function currentPlan() {
+    var plan = {};
+    PLAN_YEARS.forEach(function (y) { plan[y] = coursesIn(y).map(function (c) { return c.id; }); });
+    return plan;
+  }
+
+  /* ---------- Renderização ---------- */
+  function renderPresets() {
+    $('presets').innerHTML = PRESETS.map(function (p) {
+      return '<button type="button" class="btn" data-preset="' + p.id + '">' + esc(p.nome) + '</button>';
+    }).join('');
+  }
+
+  function renderYears() {
+    var active = document.activeElement && document.activeElement.id;
+    var unassigned = COURSES.filter(function (c) { return !state.year[c.id]; }).length;
+    $('years').innerHTML = PLAN_YEARS.map(function (y) {
+      var list = coursesIn(y);
+      var chips = list.length
+        ? list.map(function (c) { return '<span class="chip">' + esc(c.nome) + '</span>'; }).join('')
+        : '<span class="chip-empty">Nenhum curso neste ano</span>';
+      return '<div class="year">' +
+        '<div class="year-label">' + y + '</div>' +
+        '<div class="stepper" role="group" aria-label="Cursos em ' + y + '">' +
+        '<button type="button" id="dec-' + y + '" data-dec="' + y + '" aria-label="Remover um curso em ' + y + '"' + (list.length ? '' : ' disabled') + '>−</button>' +
+        '<span class="count" aria-live="polite">' + list.length + '</span>' +
+        '<button type="button" id="inc-' + y + '" data-inc="' + y + '" aria-label="Adicionar um curso em ' + y + '"' + (unassigned ? '' : ' disabled') + '>+</button>' +
+        '<span class="unit">' + (list.length === 1 ? 'curso' : 'cursos') + '</span>' +
+        '</div>' +
+        '<div class="chips">' + chips + '</div>' +
+        '</div>';
+    }).join('');
+    if (active) { var el = $(active); if (el && !el.disabled) el.focus(); }
+  }
+
+  function buildCourseTable() {
+    var opts = '<option value="">Não abrir</option>' + PLAN_YEARS.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
+    document.querySelector('#tb-cursos tbody').innerHTML = COURSES.map(function (c) {
+      return '<tr>' +
+        '<td>' + esc(c.nome) + '<span class="sub">' + esc(c.eixo) + '</span></td>' +
+        '<td class="num">' + fmt(c.fec, 3) + '</td>' +
+        '<td><input class="field num" type="number" min="0" step="5" inputmode="numeric" id="v-' + c.id + '" data-vagas="' + c.id + '" aria-label="Vagas por ano: ' + esc(c.nome) + '"></td>' +
+        '<td><select class="field" id="s-' + c.id + '" data-year="' + c.id + '" aria-label="Ano de início: ' + esc(c.nome) + '">' + opts + '</select></td>' +
+        '<td class="num" id="m-' + c.id + '"></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function renderCourseTable() {
+    var tv = 0, tm = 0;
+    COURSES.forEach(function (c) {
+      var sel = $('s-' + c.id);
+      sel.value = state.year[c.id] ? String(state.year[c.id]) : '';
+      var m = state.year[c.id] ? state.vagas[c.id] * state.dur * state.fech * c.fec : 0;
+      $('m-' + c.id).textContent = state.year[c.id] ? fmt(m, 2) : '–';
+      if (state.year[c.id]) { tv += state.vagas[c.id]; tm += m; }
+    });
+    $('f-vagas').textContent = fmt(tv, 0);
+    $('f-vagas').className = 'num';
+    $('f-mateq').textContent = fmt(tm, 2);
+    $('f-mateq').className = 'num';
+  }
+
+  function pill(ok, yes, no) {
+    return '<span class="pill ' + (ok ? 'pill-good' : 'pill-warn') + '">' + (ok ? yes : no) + '</span>';
+  }
+
+  function renderKpis(rows) {
+    var r = rows[rows.length - 2] || rows[rows.length - 1];
+    var fy = fullYear();
+    rows.forEach(function (x) { if (x.y === fy) r = x; });
+    var metaT = state.meta.tec / 100, metaL = state.meta.lic / 100;
+    var okT = r.pTec >= metaT - 1e-9, okL = r.pLic >= metaL - 1e-9;
+    var ativos = COURSES.filter(function (c) { return state.year[c.id]; });
+    var vagas = ativos.reduce(function (s, c) { return s + state.vagas[c.id]; }, 0);
+    var falta = 0, vagasExtra = 0, fecRef = 0;
+    if (!okT && metaT < 1) {
+      var need = (state.base.lic + state.base.out) * metaT / (1 - metaT);
+      falta = Math.max(0, need - r.tec);
+      fecRef = ativos.length ? ativos.reduce(function (s, c) { return s + c.fec; }, 0) / ativos.length : 1.05;
+      var porVaga = state.dur * state.fech * fecRef;
+      vagasExtra = porVaga ? Math.ceil(falta / porVaga) : 0;
+    }
+    var k = [];
+    k.push('<div class="kpi"><span class="kpi-label">Técnico em ' + fy + '</span><span class="kpi-value">' + pct(r.pTec) + '</span>' +
+      '<span class="kpi-sub">Meta: ' + fmt(state.meta.tec, 0) + '%. Hoje: ' + pct(rows[0].pTec) + '</span>' + pill(okT, 'Atende a meta', 'Abaixo da meta') + '</div>');
+    k.push('<div class="kpi"><span class="kpi-label">Licenciatura em ' + fy + '</span><span class="kpi-value">' + pct(r.pLic) + '</span>' +
+      '<span class="kpi-sub">Mínimo: ' + fmt(state.meta.lic, 0) + '%. Hoje: ' + pct(rows[0].pLic) + '</span>' + pill(okL, 'Atende o mínimo', 'Abaixo do mínimo') + '</div>');
+    k.push('<div class="kpi"><span class="kpi-label">MEq dos novos cursos</span><span class="kpi-value">' + fmt(r.novos, 1) + '</span>' +
+      '<span class="kpi-sub">' + ativos.length + (ativos.length === 1 ? ' curso' : ' cursos') + ' · ' + fmt(vagas, 0) + ' vagas/ano · ' + fmt(r.mat, 0) + ' matrículas</span></div>');
+    if (okT) {
+      k.push('<div class="kpi"><span class="kpi-label">Para atingir a meta</span><span class="kpi-value">0</span><span class="kpi-sub">Meta de técnico alcançada com este plano</span></div>');
+    } else {
+      k.push('<div class="kpi"><span class="kpi-label">Falta para a meta do técnico</span><span class="kpi-value">' + fmt(falta, 1) + '</span>' +
+        '<span class="kpi-sub">MEq. Equivale a cerca de ' + fmt(vagasExtra, 0) + ' vagas/ano a mais em cursos de FEC médio ' + fmt(fecRef, 3) + '</span></div>');
+    }
+    $('kpis').innerHTML = k.join('');
+    $('h-res').textContent = 'Resultado em regime pleno (' + fy + ')';
+  }
+
+  function renderChart(rows) {
+    var W = 720, H = 300, L = 44, R = 62, T = 14, B = 34;
+    var pw = W - L - R, ph = H - T - B, n = rows.length;
+    var band = pw / n, bw = Math.min(54, band * 0.62);
+    function Y(p) { return T + ph * (1 - p); }
+    var s = '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Gráfico de colunas empilhadas com o percentual de técnico, licenciatura e demais cursos por ano">';
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (t) {
+      s += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(t) + '" y2="' + Y(t) + '"/>';
+      s += '<text class="ax" x="' + (L - 6) + '" y="' + (Y(t) + 4) + '" text-anchor="end">' + Math.round(t * 100) + '%</text>';
+    });
+    rows.forEach(function (r, i) {
+      var x = L + band * i + (band - bw) / 2;
+      var segs = [
+        { p: r.pTec, c: 'var(--c-tec)', t: 'var(--on-tec)' },
+        { p: r.pLic, c: 'var(--c-lic)', t: 'var(--on-lic)' },
+        { p: r.pOut, c: 'var(--c-out)', t: 'var(--on-out)' }
+      ];
+      var acc = 0;
+      segs.forEach(function (sg) {
+        var y1 = Y(acc + sg.p), h = Y(acc) - y1;
+        s += '<rect x="' + x.toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(0, h).toFixed(1) + '" fill="' + sg.c + '"/>';
+        if (h >= 16) {
+          s += '<text class="seg-label" x="' + (x + bw / 2).toFixed(1) + '" y="' + (y1 + h / 2 + 4).toFixed(1) + '" text-anchor="middle" fill="' + sg.t + '">' + fmt(sg.p * 100, 1) + '</text>';
+        }
+        acc += sg.p;
+      });
+      s += '<text class="ax" x="' + (x + bw / 2).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + (i === 0 ? 'Atual' : r.y) + '</text>';
+    });
+    var my = Y(state.meta.tec / 100);
+    s += '<line class="meta" x1="' + L + '" x2="' + (W - R + 4) + '" y1="' + my + '" y2="' + my + '"/>';
+    s += '<text class="meta-label" x="' + (W - R + 8) + '" y="' + (my + 4) + '">meta ' + fmt(state.meta.tec, 0) + '%</text>';
+    s += '</svg>';
+    $('chart').innerHTML = s;
+  }
+
+  function renderProj(rows) {
+    var metaT = state.meta.tec / 100;
+    var h = '<thead><tr><th>Indicador</th>' + rows.map(function (r, i) { return '<th>' + (i === 0 ? 'Atual' : r.y) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    function line(label, fn, cls) {
+      return '<tr><td>' + label + '</td>' + rows.map(function (r) { return '<td class="num ' + (cls || '') + '">' + fn(r) + '</td>'; }).join('') + '</tr>';
+    }
+    h += line('Matrículas dos novos cursos', function (r) { return fmt(r.mat, 0); });
+    h += line('MEq dos novos cursos', function (r) { return fmt(r.novos, 1); });
+    h += line('MEq técnico total', function (r) { return fmt(r.tec, 1); });
+    h += line('MEq total do campus', function (r) { return fmt(r.total, 1); });
+    h += line('% técnico', function (r) { return pct(r.pTec); }, 'strong');
+    h += line('% licenciatura', function (r) { return pct(r.pLic); });
+    h += line('% demais cursos', function (r) { return pct(r.pOut); });
+    h += line('Técnico x meta', function (r) { return r.pTec >= metaT - 1e-9 ? 'Atende' : 'Abaixo'; });
+    h += '</tbody>';
+    $('tb-proj').innerHTML = h;
+  }
+
+  function renderCmp() {
+    var metaT = state.meta.tec / 100;
+    var cur = steady(currentPlan(), state.vagas);
+    function row(nome, r, me, presetId) {
+      var plano = '';
+      return '<tr class="' + (me ? 'me' : '') + '"><td>' + esc(nome) + '</td>' +
+        '<td class="num">' + r.cursos + '</td>' +
+        '<td class="num">' + fmt(r.vagas, 0) + '</td>' +
+        '<td class="num">' + fmt(r.novos, 1) + '</td>' +
+        '<td class="num"><strong>' + pct(r.pTec) + '</strong></td>' +
+        '<td>' + (r.pTec >= metaT - 1e-9 ? '<span class="pill pill-good">Atende</span>' : '<span class="pill pill-warn">Abaixo</span>') + '</td>' +
+        '<td>' + (presetId ? '<button type="button" class="btn" data-preset="' + presetId + '">Aplicar</button>' : '') + '</td></tr>';
+    }
+    var h = '<thead><tr><th>Cenário</th><th>Cursos</th><th>Vagas/ano</th><th>MEq novos</th><th>% técnico</th><th>Meta</th><th></th></tr></thead><tbody>';
+    h += row('Seu cenário', cur, true, null);
+    PRESETS.forEach(function (p) { h += row(p.nome, steady(p.plan, p.vagas), false, p.id); });
+    h += '</tbody>';
+    $('tb-cmp').innerHTML = h;
+  }
+
+  function syncInputs() {
+    $('in-fech').value = state.fech;
+    $('in-dur').value = state.dur;
+    $('in-vp').value = state.vp;
+    $('in-btec').value = state.base.tec;
+    $('in-blic').value = state.base.lic;
+    $('in-bout').value = state.base.out;
+    $('in-mtec').value = state.meta.tec;
+    $('in-mlic').value = state.meta.lic;
+    COURSES.forEach(function (c) { $('v-' + c.id).value = state.vagas[c.id]; });
+  }
+
+  function update() {
+    var rows = project();
+    renderYears();
+    renderCourseTable();
+    renderKpis(rows);
+    renderChart(rows);
+    renderProj(rows);
+    renderCmp();
+  }
+
+  /* ---------- Eventos ---------- */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('button') : null;
+    if (!t) return;
+    if (t.dataset.preset) {
+      var p = PRESETS.filter(function (x) { return x.id === t.dataset.preset; })[0];
+      if (p) applyPreset(p);
+    } else if (t.dataset.inc) {
+      var y = parseInt(t.dataset.inc, 10);
+      var next = COURSES.filter(function (c) { return !state.year[c.id]; })[0];
+      if (next) { state.year[next.id] = y; update(); }
+    } else if (t.dataset.dec) {
+      var yy = parseInt(t.dataset.dec, 10);
+      var list = coursesIn(yy);
+      if (list.length) { state.year[list[list.length - 1].id] = null; update(); }
+    } else if (t.id === 'btn-vp') {
+      COURSES.forEach(function (c) { state.vagas[c.id] = state.vp; });
+      syncInputs(); update();
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.dataset && t.dataset.year) {
+      state.year[t.dataset.year] = t.value ? parseInt(t.value, 10) : null;
+      update();
+    }
+  });
+
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.dataset && t.dataset.vagas) { state.vagas[t.dataset.vagas] = Math.max(0, num(t.value, 0)); update(); return; }
+    switch (t.id) {
+      case 'in-fech': state.fech = Math.max(0, num(t.value, 0)); break;
+      case 'in-dur': state.dur = Math.min(6, Math.max(1, Math.round(num(t.value, 3)))); break;
+      case 'in-vp': state.vp = Math.max(0, num(t.value, 0)); return;
+      case 'in-btec': state.base.tec = Math.max(0, num(t.value, 0)); break;
+      case 'in-blic': state.base.lic = Math.max(0, num(t.value, 0)); break;
+      case 'in-bout': state.base.out = Math.max(0, num(t.value, 0)); break;
+      case 'in-mtec': state.meta.tec = Math.min(100, Math.max(0, num(t.value, 0))); break;
+      case 'in-mlic': state.meta.lic = Math.min(100, Math.max(0, num(t.value, 0))); break;
+      default: return;
+    }
+    update();
+  });
+
+  renderPresets();
+  buildCourseTable();
+  applyPreset(PRESETS.filter(function (p) { return p.id === 'dois'; })[0]);
+})();
+</script>
+
+</body></html>
