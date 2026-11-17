@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: ferramenta em duas colunas (plano, cursos e ajustes à esquerda; resultados à direita); uma coluna no celular. */
+/* Layout: ferramenta em duas colunas (plano, cursos e ajustes à esquerda; resultados à direita), imagem da simulação em largura total abaixo; uma coluna no celular. */
 :root {
   --bg: #F4F6F3;
   --surface: #FFFFFF;
@@ -17,6 +17,8 @@
   --on-accent: #FFFFFF;
   --c-tec: #1B7443;
   --on-tec: #FFFFFF;
+  --c-sub: #A85F00;
+  --on-sub: #FFFFFF;
   --c-lic: #3A6DB4;
   --on-lic: #FFFFFF;
   --c-out: #B7C0B8;
@@ -41,6 +43,8 @@
     --on-accent: #0B1A12;
     --c-tec: #55C184;
     --on-tec: #0B1A12;
+    --c-sub: #E0A458;
+    --on-sub: #1E1204;
     --c-lic: #7AA3E6;
     --on-lic: #0B1424;
     --c-out: #55655A;
@@ -64,6 +68,8 @@
   --on-accent: #0B1A12;
   --c-tec: #55C184;
   --on-tec: #0B1A12;
+  --c-sub: #E0A458;
+  --on-sub: #1E1204;
   --c-lic: #7AA3E6;
   --on-lic: #0B1424;
   --c-out: #55655A;
@@ -106,6 +112,8 @@ button, input, select { font: inherit; color: inherit; }
 .btn { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-weight: 500; font-size: 13px; }
 .btn:hover { background: var(--surface-2); }
 .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.typebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.typebar .lab { font-size: 12px; font-weight: 600; color: var(--muted); }
 
 .years { display: flex; flex-direction: column; gap: 10px; }
 .year { display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--surface-2); border-radius: 6px; }
@@ -117,13 +125,15 @@ button, input, select { font: inherit; color: inherit; }
 .stepper button[disabled] { opacity: 0.35; cursor: not-allowed; }
 .stepper .count { min-width: 2ch; text-align: center; font-family: var(--font-num); font-size: 18px; font-weight: 500; }
 .stepper .unit { color: var(--muted); font-size: 12px; }
-.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 6px; }
-.pick { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; font-size: 13px; line-height: 1.3; min-width: 0; }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 6px; }
+.pick { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-size: 13px; line-height: 1.3; min-width: 0; }
 .pick:hover { border-color: var(--accent); }
 .pick.on { background: var(--accent-soft); border-color: var(--accent); }
-.pick input { accent-color: var(--accent); width: 16px; height: 16px; flex: none; margin: 0; }
+.pick label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1 1 150px; min-width: 0; }
+.pick input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; flex: none; margin: 0; }
 .pick-text { display: flex; flex-direction: column; min-width: 0; }
 .pick-sub { color: var(--muted); font-size: 11px; }
+.pick select { font-size: 12px; padding: 3px 6px; flex: none; }
 
 .table-scroll { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; }
@@ -138,7 +148,6 @@ tfoot td { font-weight: 600; border-top: 1px solid var(--line); border-bottom: 0
 .field-md { width: 74px; }
 select.field { width: auto; text-align: left; font-family: var(--font-body); }
 .field:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-td.dim { color: var(--muted); }
 
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
 .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -164,6 +173,9 @@ svg.chart .seg-label { font-family: var(--font-num); font-size: 11px; }
 .proj td.strong { font-weight: 600; }
 .cmp td:first-child { min-width: 170px; }
 .cmp tr.me td { background: var(--accent-soft); }
+
+.sim-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.sim-img { display: block; width: 100%; min-width: 860px; height: auto; }
 
 details.panel > summary { cursor: pointer; font-weight: 600; font-size: 15px; list-style-position: inside; }
 details.panel[open] > summary { margin-bottom: 12px; }
@@ -192,8 +204,8 @@ details.panel[open] > summary { margin-bottom: 12px; }
 <div class="wrap">
   <header>
     <div class="eyebrow">IFCE Campus Canindé · Portaria SETEC nº 146/2021</div>
-    <h1>Planejador de oferta de cursos técnicos integrados</h1>
-    <p class="lede">Marque os cursos que deseja abrir em 2028, 2029 e 2030 e veja como muda o percentual de matrículas equivalentes em cursos técnicos, licenciaturas e demais cursos.</p>
+    <h1>Planejador de oferta de cursos técnicos</h1>
+    <p class="lede">Marque os cursos que deseja abrir em 2028, 2029 e 2030, escolha se cada um será integrado ao ensino médio ou subsequente e veja como muda o percentual de matrículas equivalentes em cursos técnicos, licenciaturas e demais cursos.</p>
   </header>
 
   <div class="layout">
@@ -204,6 +216,11 @@ details.panel[open] > summary { margin-bottom: 12px; }
           <span class="hint">Um curso pode ser aberto em apenas um ano</span>
         </div>
         <div class="presets" id="presets" role="group" aria-label="Cenários prontos"></div>
+        <div class="typebar" role="group" aria-label="Tipo de todos os cursos">
+          <span class="lab">Tipo de todos os cursos</span>
+          <button type="button" class="btn" data-alltype="int">Todos integrados</button>
+          <button type="button" class="btn" data-alltype="sub">Todos subsequentes</button>
+        </div>
         <div class="years" id="years" style="margin-top:12px"></div>
       </section>
 
@@ -214,12 +231,13 @@ details.panel[open] > summary { margin-bottom: 12px; }
         </div>
         <div class="table-scroll">
           <table id="tb-cursos">
-            <thead><tr><th>Curso</th><th>FEC</th><th>Carga horária (h)</th><th>Duração (anos)</th><th>FECH</th><th>Vagas/ano</th><th>Início</th><th>Mateq pleno</th></tr></thead>
+            <thead><tr><th>Curso</th><th>FEC</th><th>Tipo</th><th>Carga horária (h)</th><th>Duração (anos)</th><th>FECH</th><th>Vagas/ano</th><th>Início</th><th>Mateq pleno</th></tr></thead>
             <tbody></tbody>
-            <tfoot><tr><td>Total dos cursos escolhidos</td><td></td><td></td><td></td><td></td><td id="f-vagas"></td><td></td><td id="f-mateq"></td></tr></tfoot>
+            <tfoot><tr><td>Total dos cursos escolhidos</td><td></td><td></td><td></td><td></td><td></td><td id="f-vagas"></td><td></td><td id="f-mateq"></td></tr></tfoot>
           </table>
         </div>
         <p class="note" id="fech-note"></p>
+        <p class="note">Ao trocar o tipo de um curso, a carga horária e a duração voltam aos padrões do novo tipo (em Premissas). A carga horária mínima do subsequente vem do Catálogo Nacional de Cursos Técnicos; Hospedagem (800 h) ainda não foi confirmada no catálogo.</p>
       </section>
 
       <section class="panel" aria-labelledby="h-adj">
@@ -263,17 +281,26 @@ details.panel[open] > summary { margin-bottom: 12px; }
             <input type="checkbox" id="in-auto" checked>
             Calcular o FECH de cada curso pela carga horária e pela duração
           </label>
-          <label for="in-fech">FECH fixo (usado quando o cálculo estiver desligado)
-            <input class="field num" id="in-fech" type="number" step="0.01" min="0" inputmode="decimal">
+          <label for="in-fi">FECH fixo do integrado (usado com o cálculo desligado)
+            <input class="field num" id="in-fi" type="number" step="0.01" min="0" inputmode="decimal">
+          </label>
+          <label for="in-fs">FECH fixo do subsequente (usado com o cálculo desligado)
+            <input class="field num" id="in-fs" type="number" step="0.01" min="0" inputmode="decimal">
           </label>
           <label for="in-vp">Vagas anuais padrão
             <input class="field num" id="in-vp" type="number" step="5" min="0" inputmode="numeric">
           </label>
-          <label for="in-cp">Carga horária padrão (h)
-            <input class="field num" id="in-cp" type="number" step="100" min="0" inputmode="numeric">
+          <label for="in-ci">Integrado: carga horária padrão (h)
+            <input class="field num" id="in-ci" type="number" step="100" min="0" inputmode="numeric">
           </label>
-          <label for="in-dp">Duração padrão (anos)
-            <input class="field num" id="in-dp" type="number" step="1" min="1" max="6" inputmode="numeric">
+          <label for="in-di">Integrado: duração padrão (anos)
+            <input class="field num" id="in-di" type="number" step="0.5" min="0.5" max="6" inputmode="decimal">
+          </label>
+          <label for="in-ds">Subsequente: duração padrão (anos)
+            <input class="field num" id="in-ds" type="number" step="0.5" min="0.5" max="6" inputmode="decimal">
+          </label>
+          <label>Subsequente: carga horária padrão
+            <span class="hint" style="padding:6px 0">Mínimo do catálogo para cada curso (800 a 1.200 h)</span>
           </label>
           <label>Aplicar os padrões
             <button class="btn" id="btn-vp" type="button">Aplicar a todos os cursos</button>
@@ -294,7 +321,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
             <input class="field num" id="in-mlic" type="number" step="1" min="0" max="100" inputmode="decimal">
           </label>
         </div>
-        <p class="note">O art. 2º, §1º da Portaria 146/2021 define FECH = 1 para cursos que não são de qualificação profissional (FIC). Os padrões de carga horária e duração valem para os cursos novos; cada curso pode ser ajustado na tabela.</p>
+        <p class="note">Hoje o campus tem índice de MEq por matrícula de 1,41 no integrado e 1,62 no subsequente (MEq ÷ matrículas). O art. 2º, §1º da Portaria 146/2021 define FECH = 1 para cursos que não são de qualificação profissional (FIC). No subsequente, a duração em semestres vira anos (3 semestres = 1,5 ano), e as matrículas em regime pleno são vagas por ano × duração.</p>
       </details>
     </div>
 
@@ -330,30 +357,39 @@ details.panel[open] > summary { margin-bottom: 12px; }
       <section class="panel" aria-labelledby="h-cmp">
         <div class="panel-head">
           <h2 id="h-cmp">Comparação de cenários</h2>
-          <span class="hint">Regime pleno, com suas premissas atuais</span>
+          <span class="hint">Regime pleno. Os cenários prontos usam os padrões de cada tipo</span>
         </div>
         <div class="table-scroll"><table class="cmp" id="tb-cmp"></table></div>
       </section>
     </div>
   </div>
 
+  <section aria-labelledby="h-sim" style="display:flex;flex-direction:column;gap:10px">
+    <div class="panel-head" style="margin-bottom:0">
+      <h2 id="h-sim">Simulação da implantação por ano</h2>
+      <span class="hint">A imagem acompanha as escolhas feitas acima</span>
+    </div>
+    <div class="sim-scroll"><img id="sim-img" class="sim-img" alt="Simulação da implantação dos cursos técnicos por ano"></div>
+  </section>
+
   <footer class="footnotes">
-    <p>FEC de cada curso: Anexo II da Portaria SETEC nº 146, de 25 de março de 2021. A tabela pode ser revista a cada dois anos, então confirme os valores vigentes.</p>
+    <p>FEC de cada curso: Anexo II da Portaria SETEC nº 146, de 25 de março de 2021. A tabela pode ser revista a cada dois anos, então confirme os valores vigentes. O FEC é o mesmo para integrado e subsequente; o tipo muda a carga horária, a duração, o FECH e o número de matrículas em regime pleno.</p>
     <p>Mateq = matrículas × FECH × FEC. Metas da Lei nº 11.892/2008, art. 8º: mínimo de 50% das vagas em cursos técnicos de nível médio e 20% em licenciaturas. Os cursos já existentes seguem constantes (com o ajuste informado) e não há desconto de evasão ou retenção.</p>
-    <p>Confirme no Catálogo Nacional de Cursos Técnicos a oferta de cada curso na forma integrada, em especial Tradução e Interpretação de Libras e Produção de Áudio e Vídeo.</p>
+    <p>Cargas horárias mínimas do subsequente: Catálogo Nacional de Cursos Técnicos, 4ª edição (Resolução CNE/CEB nº 2/2020). Confirme no catálogo a oferta de cada curso na forma integrada, em especial Tradução e Interpretação de Libras e Produção de Áudio e Vídeo.</p>
   </footer>
 </div>
 
 <script>
 (function () {
   var COURSES = [
-    { id: 'av', nome: 'Produção de Áudio e Vídeo', eixo: 'Produção Cultural e Design', fec: 1.5 },
-    { id: 'ds', nome: 'Desenvolvimento de Sistemas', eixo: 'Informação e Comunicação', fec: 1.05 },
-    { id: 'rc', nome: 'Redes de Computadores', eixo: 'Informação e Comunicação', fec: 1.032 },
-    { id: 'hs', nome: 'Hospedagem', eixo: 'Turismo, Hospitalidade e Lazer', fec: 1.019 },
-    { id: 'tl', nome: 'Tradução e Interpretação de Libras', eixo: 'Desenvolvimento Educacional e Social', fec: 1.009 },
-    { id: 'ad', nome: 'Administração', eixo: 'Gestão e Negócios', fec: 1.008 }
+    { id: 'av', nome: 'Produção de Áudio e Vídeo', eixo: 'Produção Cultural e Design', fec: 1.5, cnct: 1200, conf: true },
+    { id: 'ds', nome: 'Desenvolvimento de Sistemas', eixo: 'Informação e Comunicação', fec: 1.05, cnct: 1200, conf: true },
+    { id: 'rc', nome: 'Redes de Computadores', eixo: 'Informação e Comunicação', fec: 1.032, cnct: 1000, conf: true },
+    { id: 'hs', nome: 'Hospedagem', eixo: 'Turismo, Hospitalidade e Lazer', fec: 1.019, cnct: 800, conf: false },
+    { id: 'tl', nome: 'Tradução e Interpretação de Libras', eixo: 'Desenvolvimento Educacional e Social', fec: 1.009, cnct: 1200, conf: true },
+    { id: 'ad', nome: 'Administração', eixo: 'Gestão e Negócios', fec: 1.008, cnct: 800, conf: true }
   ];
+  var TYPES = { int: 'Integrado', sub: 'Subsequente' };
   var PLAN_YEARS = [2028, 2029, 2030];
   var BASE_YEAR = 2027;
   var MIN_LAST_YEAR = 2033;
@@ -364,19 +400,29 @@ details.panel[open] > summary { margin-bottom: 12px; }
     { id: 'dois', nome: '2 cursos por ano', plan: { 2028: ['av', 'ds'], 2029: ['rc', 'hs'], 2030: ['tl', 'ad'] }, vagas: {} },
     { id: 'tudo', nome: 'Todos em 2028', plan: { 2028: ['av', 'ds', 'rc', 'hs', 'tl', 'ad'] }, vagas: {} },
     { id: 'meta', nome: '2 por ano, 80 vagas em Des. de Sistemas', plan: { 2028: ['av', 'ds'], 2029: ['rc', 'hs'], 2030: ['tl', 'ad'] }, vagas: { ds: 80 } },
+    { id: 'sub', nome: '2 por ano, todos subsequentes', plan: { 2028: ['av', 'ds'], 2029: ['rc', 'hs'], 2030: ['tl', 'ad'] }, vagas: {}, tipoTodos: 'sub' },
+    { id: 'misto', nome: '2 por ano, integrado em Sistemas e Áudio e Vídeo', plan: { 2028: ['av', 'ds'], 2029: ['rc', 'hs'], 2030: ['tl', 'ad'] }, vagas: {}, tipo: { rc: 'sub', hs: 'sub', tl: 'sub', ad: 'sub' } },
     { id: 'zero', nome: 'Sem novos cursos', plan: {}, vagas: {} }
   ];
 
   var state = {
-    auto: true, fech: 1.25,
-    vp: 40, cp: 3200, dp: 3,
+    auto: true, fechI: 1.25, fechS: 1.0,
+    vp: 40,
+    def: { int: { ch: 3200, dur: 3 }, sub: { dur: 1.5 } },
     base: { tec: 248.48, lic: 874, out: 452.2 },
     adj: { g: 0, tec: 0, lic: 0, out: 0 },
     meta: { tec: 50, lic: 20 },
-    vagas: {}, ch: {}, dur: {}, year: {}
+    type: {}, vagas: {}, ch: {}, dur: {}, year: {}
   };
+
+  function defCH(c, t) { return t === 'int' ? state.def.int.ch : c.cnct; }
+  function defDur(t) { return state.def[t].dur; }
   COURSES.forEach(function (c) {
-    state.vagas[c.id] = state.vp; state.ch[c.id] = state.cp; state.dur[c.id] = state.dp; state.year[c.id] = null;
+    state.type[c.id] = 'int';
+    state.vagas[c.id] = state.vp;
+    state.ch[c.id] = defCH(c, 'int');
+    state.dur[c.id] = defDur('int');
+    state.year[c.id] = null;
   });
 
   function $(id) { return document.getElementById(id); }
@@ -387,10 +433,23 @@ details.panel[open] > summary { margin-bottom: 12px; }
   }
   function pct(n) { return fmt(n * 100, 1) + '%'; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function typeOpts(sel) {
+    return Object.keys(TYPES).map(function (k) { return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + TYPES[k] + '</option>'; }).join('');
+  }
 
-  /* ---------- Cálculos ---------- */
-  function fechCalc(c) { return state.ch[c.id] / (Math.max(1, state.dur[c.id]) * 800); }
-  function fechOf(c) { return state.auto ? fechCalc(c) : state.fech; }
+  /* ---------- Parâmetros e cálculos ---------- */
+  function qState(c) { return { type: state.type[c.id], ch: state.ch[c.id], dur: state.dur[c.id], vagas: state.vagas[c.id] }; }
+  function qPreset(c, p) {
+    var t = (p.tipo && p.tipo[c.id]) || p.tipoTodos || 'int';
+    var v = p.vagas[c.id] !== undefined ? p.vagas[c.id] : state.vp;
+    return { type: t, ch: defCH(c, t), dur: defDur(t), vagas: v };
+  }
+  function fechFor(q) {
+    if (state.auto) return q.ch / (Math.max(0.5, q.dur) * 800);
+    return q.type === 'int' ? state.fechI : state.fechS;
+  }
+  function fechCalc(c) { var q = qState(c); return q.ch / (Math.max(0.5, q.dur) * 800); }
+  function fechOf(c) { return fechFor(qState(c)); }
   function factor(k) { return Math.max(0, (1 + state.adj.g / 100) * (1 + state.adj[k] / 100)); }
   function adjBase() {
     return { tec: state.base.tec * factor('tec'), lic: state.base.lic * factor('lic'), out: state.base.out * factor('out') };
@@ -400,27 +459,32 @@ details.panel[open] > summary { margin-bottom: 12px; }
   function assigned() { return COURSES.filter(function (c) { return state.year[c.id]; }); }
   function endYear() {
     var a = assigned();
-    if (!a.length) return PLAN_YEARS[PLAN_YEARS.length - 1] + state.dp - 1;
-    return Math.max.apply(null, a.map(function (c) { return state.year[c.id] + state.dur[c.id] - 1; }));
+    if (!a.length) return PLAN_YEARS[PLAN_YEARS.length - 1] + Math.ceil(state.def.int.dur) - 1;
+    return Math.max.apply(null, a.map(function (c) { return state.year[c.id] + Math.ceil(state.dur[c.id]) - 1; }));
   }
   function lastYear() { return Math.max(endYear() + 1, MIN_LAST_YEAR); }
+  function matIn(c, y) {
+    var s = state.year[c.id];
+    if (!s || y < s) return 0;
+    return Math.min(y - s + 1, state.dur[c.id]) * state.vagas[c.id];
+  }
 
   function project() {
     var B = adjBase(), rows = [];
     for (var y = BASE_YEAR; y <= lastYear(); y++) {
-      var mat = 0, novos = 0;
+      var mat = 0, nI = 0, nS = 0;
       COURSES.forEach(function (c) {
-        var s = state.year[c.id];
-        if (s && y >= s) {
-          var m = Math.min(y - s + 1, state.dur[c.id]) * state.vagas[c.id];
-          mat += m;
-          novos += m * fechOf(c) * c.fec;
-        }
+        var m = matIn(c, y);
+        if (!m) return;
+        mat += m;
+        var meq = m * fechOf(c) * c.fec;
+        if (state.type[c.id] === 'int') nI += meq; else nS += meq;
       });
+      var novos = nI + nS;
       var tec = B.tec + novos;
       var total = tec + B.lic + B.out;
       rows.push({
-        y: y, mat: mat, novos: novos, tec: tec, total: total,
+        y: y, mat: mat, novos: novos, nI: nI, nS: nS, tec: tec, total: total,
         pTec: total ? tec / total : 0,
         pLic: total ? B.lic / total : 0,
         pOut: total ? B.out / total : 0
@@ -429,29 +493,43 @@ details.panel[open] > summary { margin-bottom: 12px; }
     return rows;
   }
 
-  function steady(plan, vagasOver) {
-    var B = adjBase(), novos = 0, vagas = 0, cursos = 0;
-    COURSES.forEach(function (c) {
-      var inPlan = false;
-      PLAN_YEARS.forEach(function (y) { if ((plan[y] || []).indexOf(c.id) >= 0) inPlan = true; });
-      if (!inPlan) return;
-      var v = (vagasOver && vagasOver[c.id] !== undefined) ? vagasOver[c.id] : state.vp;
-      novos += v * state.dur[c.id] * fechOf(c) * c.fec;
-      vagas += v; cursos += 1;
+  function scenario(items) {
+    var B = adjBase(), novos = 0, vagas = 0, nInt = 0, nSub = 0;
+    items.forEach(function (it) {
+      novos += it.q.vagas * it.q.dur * fechFor(it.q) * it.c.fec;
+      vagas += it.q.vagas;
+      if (it.q.type === 'int') nInt++; else nSub++;
     });
     var tec = B.tec + novos;
     var total = tec + B.lic + B.out;
-    return { novos: novos, vagas: vagas, cursos: cursos, pTec: total ? tec / total : 0 };
+    return { novos: novos, vagas: vagas, cursos: items.length, nInt: nInt, nSub: nSub, pTec: total ? tec / total : 0 };
+  }
+  function scenarioState() {
+    return scenario(assigned().map(function (c) { return { c: c, q: qState(c) }; }));
+  }
+  function scenarioPreset(p) {
+    var items = [];
+    COURSES.forEach(function (c) {
+      var inPlan = PLAN_YEARS.some(function (y) { return (p.plan[y] || []).indexOf(c.id) >= 0; });
+      if (inPlan) items.push({ c: c, q: qPreset(c, p) });
+    });
+    return scenario(items);
   }
 
-  function currentPlan() {
-    var plan = {};
-    PLAN_YEARS.forEach(function (y) { plan[y] = coursesIn(y).map(function (c) { return c.id; }); });
-    return plan;
+  function setType(id, t) {
+    var c = COURSES.filter(function (x) { return x.id === id; })[0];
+    state.type[id] = t;
+    state.ch[id] = defCH(c, t);
+    state.dur[id] = defDur(t);
   }
 
   function applyPreset(p) {
-    COURSES.forEach(function (c) { state.year[c.id] = null; state.vagas[c.id] = state.vp; });
+    COURSES.forEach(function (c) {
+      state.year[c.id] = null;
+      var t = (p.tipo && p.tipo[c.id]) || p.tipoTodos || 'int';
+      setType(c.id, t);
+      state.vagas[c.id] = state.vp;
+    });
     PLAN_YEARS.forEach(function (y) { (p.plan[y] || []).forEach(function (id) { state.year[id] = y; }); });
     Object.keys(p.vagas).forEach(function (id) { state.vagas[id] = p.vagas[id]; });
     syncInputs();
@@ -473,9 +551,13 @@ details.panel[open] > summary { margin-bottom: 12px; }
       var picks = COURSES.map(function (c) {
         var on = state.year[c.id] === y;
         var other = state.year[c.id] && !on ? '<span class="pick-sub">Hoje em ' + state.year[c.id] + '; marcar move para ' + y + '</span>' : '';
-        return '<label class="pick' + (on ? ' on' : '') + '" for="p-' + y + '-' + c.id + '">' +
+        var sel = on
+          ? '<select class="field" id="pt-' + y + '-' + c.id + '" data-tipo="' + c.id + '" aria-label="Tipo do curso ' + esc(c.nome) + '">' + typeOpts(state.type[c.id]) + '</select>'
+          : '';
+        return '<div class="pick' + (on ? ' on' : '') + '">' +
+          '<label for="p-' + y + '-' + c.id + '">' +
           '<input type="checkbox" id="p-' + y + '-' + c.id + '" data-pick="' + c.id + '" data-pyear="' + y + '"' + (on ? ' checked' : '') + '>' +
-          '<span class="pick-text"><span>' + esc(c.nome) + '</span>' + other + '</span></label>';
+          '<span class="pick-text"><span>' + esc(c.nome) + '</span>' + other + '</span></label>' + sel + '</div>';
       }).join('');
       return '<div class="year">' +
         '<div class="year-head">' +
@@ -496,10 +578,11 @@ details.panel[open] > summary { margin-bottom: 12px; }
     var opts = '<option value="">Não abrir</option>' + PLAN_YEARS.map(function (y) { return '<option value="' + y + '">' + y + '</option>'; }).join('');
     document.querySelector('#tb-cursos tbody').innerHTML = COURSES.map(function (c) {
       return '<tr>' +
-        '<td>' + esc(c.nome) + '<span class="sub">' + esc(c.eixo) + '</span></td>' +
+        '<td>' + esc(c.nome) + '<span class="sub">' + esc(c.eixo) + ' · mín. subsequente ' + fmt(c.cnct, 0) + ' h' + (c.conf ? '' : ' (a confirmar)') + '</span></td>' +
         '<td class="num">' + fmt(c.fec, 3) + '</td>' +
+        '<td><select class="field" id="ty-' + c.id + '" data-tipo="' + c.id + '" aria-label="Tipo: ' + esc(c.nome) + '">' + typeOpts('int') + '</select></td>' +
         '<td><input class="field field-md num" type="number" min="0" step="100" inputmode="numeric" id="ch-' + c.id + '" data-ch="' + c.id + '" aria-label="Carga horária: ' + esc(c.nome) + '"></td>' +
-        '<td><input class="field field-sm num" type="number" min="1" max="6" step="1" inputmode="numeric" id="du-' + c.id + '" data-dur="' + c.id + '" aria-label="Duração em anos: ' + esc(c.nome) + '"></td>' +
+        '<td><input class="field field-sm num" type="number" min="0.5" max="6" step="0.5" inputmode="decimal" id="du-' + c.id + '" data-dur="' + c.id + '" aria-label="Duração em anos: ' + esc(c.nome) + '"></td>' +
         '<td class="num" id="fe-' + c.id + '"></td>' +
         '<td><input class="field field-sm num" type="number" min="0" step="5" inputmode="numeric" id="v-' + c.id + '" data-vagas="' + c.id + '" aria-label="Vagas por ano: ' + esc(c.nome) + '"></td>' +
         '<td><select class="field" id="s-' + c.id + '" data-year="' + c.id + '" aria-label="Ano de início: ' + esc(c.nome) + '">' + opts + '</select></td>' +
@@ -512,24 +595,24 @@ details.panel[open] > summary { margin-bottom: 12px; }
     var tv = 0, tm = 0;
     COURSES.forEach(function (c) {
       $('s-' + c.id).value = state.year[c.id] ? String(state.year[c.id]) : '';
+      $('ty-' + c.id).value = state.type[c.id];
       var f = fechOf(c);
-      var cell = $('fe-' + c.id);
-      cell.innerHTML = fmt(f, 3) + (state.auto ? '' : '<span class="sub">calc. ' + fmt(fechCalc(c), 3) + '</span>');
+      $('fe-' + c.id).innerHTML = fmt(f, 3) + (state.auto ? '' : '<span class="sub">calc. ' + fmt(fechCalc(c), 3) + '</span>');
       var m = state.year[c.id] ? state.vagas[c.id] * state.dur[c.id] * f * c.fec : 0;
       $('m-' + c.id).textContent = state.year[c.id] ? fmt(m, 2) : '–';
       if (state.year[c.id]) { tv += state.vagas[c.id]; tm += m; }
     });
     $('f-vagas').textContent = fmt(tv, 0); $('f-vagas').className = 'num';
     $('f-mateq').textContent = fmt(tm, 2); $('f-mateq').className = 'num';
+    var ex = COURSES[1];
     $('fech-note').textContent = state.auto
-      ? 'FECH calculado = carga horária ÷ (duração × 800). Com 3.200 h em 3 anos o resultado é 1,333; para chegar a 1,25 use 3.000 h em 3 anos, ou desligue o cálculo em Premissas para usar um FECH fixo.'
-      : 'Cálculo desligado: todos os cursos usam o FECH fixo de ' + fmt(state.fech, 3) + '. A coluna mostra o valor calculado em cinza, só para comparação.';
+      ? 'FECH calculado = carga horária ÷ (duração × 800). Exemplo com ' + ex.nome + ': integrado, ' + fmt(state.def.int.ch, 0) + ' h em ' + fmt(state.def.int.dur, 1) + ' anos = ' + fmt(state.def.int.ch / (state.def.int.dur * 800), 3) + '; subsequente, ' + fmt(ex.cnct, 0) + ' h em ' + fmt(state.def.sub.dur, 1) + ' ano(s) = ' + fmt(ex.cnct / (state.def.sub.dur * 800), 3) + '.'
+      : 'Cálculo desligado: o integrado usa FECH ' + fmt(state.fechI, 3) + ' e o subsequente usa ' + fmt(state.fechS, 3) + '. A coluna mostra o valor calculado em cinza, só para comparação.';
   }
 
   function renderAdj() {
     var B = adjBase();
-    var keys = ['tec', 'lic', 'out'];
-    keys.forEach(function (k) {
+    ['tec', 'lic', 'out'].forEach(function (k) {
       $('a-b-' + k).textContent = fmt(state.base[k], 2);
       $('a-f-' + k).textContent = '×' + fmt(factor(k), 3);
       $('a-m-' + k).textContent = fmt(B[k], 2);
@@ -542,6 +625,14 @@ details.panel[open] > summary { margin-bottom: 12px; }
 
   function pill(ok, yes, no) {
     return '<span class="pill ' + (ok ? 'pill-good' : 'pill-warn') + '">' + (ok ? yes : no) + '</span>';
+  }
+
+  function typeSummary(list) {
+    var ni = list.filter(function (c) { return state.type[c.id] === 'int'; }).length, ns = list.length - ni;
+    var parts = [];
+    if (ni) parts.push(ni + (ni === 1 ? ' integrado' : ' integrados'));
+    if (ns) parts.push(ns + (ns === 1 ? ' subsequente' : ' subsequentes'));
+    return parts.join(' + ');
   }
 
   function renderKpis(rows) {
@@ -565,7 +656,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
     k.push('<div class="kpi"><span class="kpi-label">Licenciatura em ' + fy + '</span><span class="kpi-value">' + pct(r.pLic) + '</span>' +
       '<span class="kpi-sub">Mínimo: ' + fmt(state.meta.lic, 0) + '%. Hoje: ' + pct(rows[0].pLic) + '</span>' + pill(okL, 'Atende o mínimo', 'Abaixo do mínimo') + '</div>');
     k.push('<div class="kpi"><span class="kpi-label">MEq dos novos cursos</span><span class="kpi-value">' + fmt(r.novos, 1) + '</span>' +
-      '<span class="kpi-sub">' + ativos.length + (ativos.length === 1 ? ' curso' : ' cursos') + ' · ' + fmt(vagas, 0) + ' vagas/ano · ' + fmt(r.mat, 0) + ' matrículas</span></div>');
+      '<span class="kpi-sub">' + (ativos.length ? typeSummary(ativos) : 'Nenhum curso') + ' · ' + fmt(vagas, 0) + ' vagas/ano · ' + fmt(r.mat, 0) + ' matrículas</span></div>');
     if (okT) {
       k.push('<div class="kpi"><span class="kpi-label">Para atingir a meta</span><span class="kpi-value">0</span><span class="kpi-sub">Meta de técnico alcançada com este plano</span></div>');
     } else {
@@ -625,6 +716,8 @@ details.panel[open] > summary { margin-bottom: 12px; }
       return '<tr><td>' + label + '</td>' + rows.map(function (r) { return '<td class="num ' + (cls || '') + '">' + fn(r) + '</td>'; }).join('') + '</tr>';
     }
     h += line('Matrículas dos novos cursos', function (r) { return fmt(r.mat, 0); });
+    h += line('MEq novas: integrado', function (r) { return fmt(r.nI, 1); });
+    h += line('MEq novas: subsequente', function (r) { return fmt(r.nS, 1); });
     h += line('MEq dos novos cursos', function (r) { return fmt(r.novos, 1); });
     h += line('MEq técnico total', function (r) { return fmt(r.tec, 1); });
     h += line('MEq total do campus', function (r) { return fmt(r.total, 1); });
@@ -638,28 +731,170 @@ details.panel[open] > summary { margin-bottom: 12px; }
 
   function renderCmp() {
     var metaT = state.meta.tec / 100;
+    function tipos(r) {
+      var p = [];
+      if (r.nInt) p.push(r.nInt + ' int.');
+      if (r.nSub) p.push(r.nSub + ' sub.');
+      return p.length ? p.join(' + ') : '–';
+    }
     function row(nome, r, me, presetId) {
       return '<tr class="' + (me ? 'me' : '') + '"><td>' + esc(nome) + '</td>' +
         '<td class="num">' + r.cursos + '</td>' +
+        '<td>' + tipos(r) + '</td>' +
         '<td class="num">' + fmt(r.vagas, 0) + '</td>' +
         '<td class="num">' + fmt(r.novos, 1) + '</td>' +
         '<td class="num"><strong>' + pct(r.pTec) + '</strong></td>' +
         '<td>' + (r.pTec >= metaT - 1e-9 ? '<span class="pill pill-good">Atende</span>' : '<span class="pill pill-warn">Abaixo</span>') + '</td>' +
         '<td>' + (presetId ? '<button type="button" class="btn" data-preset="' + presetId + '">Aplicar</button>' : '') + '</td></tr>';
     }
-    var h = '<thead><tr><th>Cenário</th><th>Cursos</th><th>Vagas/ano</th><th>MEq novos</th><th>% técnico</th><th>Meta</th><th></th></tr></thead><tbody>';
-    h += row('Seu cenário', steady(currentPlan(), state.vagas), true, null);
-    PRESETS.forEach(function (p) { h += row(p.nome, steady(p.plan, p.vagas), false, p.id); });
+    var h = '<thead><tr><th>Cenário</th><th>Cursos</th><th>Tipos</th><th>Vagas/ano</th><th>MEq novos</th><th>% técnico</th><th>Meta</th><th></th></tr></thead><tbody>';
+    h += row('Seu cenário', scenarioState(), true, null);
+    PRESETS.forEach(function (p) { h += row(p.nome, scenarioPreset(p), false, p.id); });
     h += '</tbody>';
     $('tb-cmp').innerHTML = h;
   }
 
+  /* ---------- Imagem da simulação ---------- */
+  function cv(n, fb) {
+    var v = '';
+    try { v = getComputedStyle(document.documentElement).getPropertyValue(n).trim(); } catch (e) {}
+    return /^#[0-9a-fA-F]{3,6}$/.test(v) ? v : fb;
+  }
+  function rgb(h) {
+    h = h.replace('#', '');
+    if (h.length === 3) h = h.split('').map(function (x) { return x + x; }).join('');
+    return [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
+  }
+  function mixc(a, b, t) {
+    var A = rgb(a), B = rgb(b);
+    return [0, 1, 2].map(function (i) { return Math.round(A[i] + (B[i] - A[i]) * t); });
+  }
+  function css(c) { return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'; }
+  function lum(c) {
+    var v = c.map(function (x) { x = x / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+
+  function buildSim(rows) {
+    var C = {
+      bg: cv('--surface', '#FFFFFF'), fg: cv('--fg', '#16211A'), muted: cv('--muted', '#566559'),
+      line: cv('--line', '#D6DDD6'), s2: cv('--surface-2', '#EDF1EC'),
+      int: cv('--c-tec', '#1B7443'), sub: cv('--c-sub', '#A85F00'),
+      good: cv('--good', '#1B7443'), goodbg: cv('--good-bg', '#DDEFE4'),
+      warn: cv('--warn', '#8F4F06'), warnbg: cv('--warn-bg', '#FBEBD3')
+    };
+    var SANS = 'Arial, Helvetica, sans-serif', MONO = 'Menlo, Consolas, "DejaVu Sans Mono", monospace';
+    var list = assigned().slice().sort(function (a, b) {
+      return state.year[a.id] - state.year[b.id] || COURSES.indexOf(a) - COURSES.indexOf(b);
+    });
+    var n = rows.length, W = 1100, X0 = 290, X1 = 1080, cw = (X1 - X0) / n;
+    var RH = 52, y0 = 106, nrows = Math.max(list.length, 1);
+    var yf = y0 + nrows * RH + 6;
+    var yl = yf + 3 * 32 + 26;
+    var H = yl + 30;
+    var metaT = state.meta.tec / 100;
+    var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" font-family="' + SANS + '">';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+
+    var ativos = list.length;
+    var vagasTot = list.reduce(function (a, c) { return a + state.vagas[c.id]; }, 0);
+    s += '<text x="20" y="32" font-size="19" font-weight="700" fill="' + C.fg + '">Simulação de implantação dos cursos técnicos · IFCE Campus Canindé</text>';
+    s += '<text x="20" y="54" font-size="12" fill="' + C.muted + '">' +
+      esc(ativos + (ativos === 1 ? ' curso' : ' cursos') + (ativos ? ' (' + typeSummary(list) + ')' : '') + ' · ' + fmt(vagasTot, 0) + ' vagas por ano · FECH ' +
+      (state.auto ? 'calculado (carga horária ÷ duração × 800)' : 'fixo') + ' · MEq atuais ' + (adjActive() ? 'ajustadas' : 'sem ajuste') + ' · meta do técnico ' + fmt(state.meta.tec, 0) + '%') + '</text>';
+
+    // cabeçalho dos anos
+    for (var i = 0; i < n; i++) {
+      var cx = X0 + cw * i + cw / 2;
+      s += '<text x="' + cx.toFixed(1) + '" y="92" font-size="13" font-weight="700" text-anchor="middle" fill="' + C.fg + '" font-family="' + MONO + '">' + (i === 0 ? 'Atual' : rows[i].y) + '</text>';
+    }
+    s += '<line x1="20" x2="' + (W - 20) + '" y1="100" y2="100" stroke="' + C.line + '" stroke-width="1"/>';
+
+    if (!list.length) {
+      s += '<text x="' + (W / 2) + '" y="' + (y0 + 30) + '" font-size="14" text-anchor="middle" fill="' + C.muted + '">Nenhum curso selecionado. Marque cursos em 2028, 2029 ou 2030 para ver a simulação.</text>';
+    }
+    list.forEach(function (c, ri) {
+      var ry = y0 + ri * RH, st = state.year[c.id], q = qState(c);
+      var f = fechOf(c);
+      var tc = q.type === 'int' ? C.int : C.sub;
+      s += '<rect x="20" y="' + ry + '" width="5" height="44" rx="2" fill="' + tc + '"/>';
+      s += '<text x="34" y="' + (ry + 18) + '" font-size="13" font-weight="700" fill="' + C.fg + '">' + esc(c.nome) + '</text>';
+      s += '<text x="34" y="' + (ry + 35) + '" font-size="11" fill="' + C.muted + '">' + esc(TYPES[q.type] + ' · ' + fmt(q.ch, 0) + ' h · FECH ' + fmt(f, 3)) + '</text>';
+      for (var j = 0; j < n; j++) {
+        var yy = rows[j].y, cx0 = X0 + cw * j + 3;
+        s += '<rect x="' + cx0.toFixed(1) + '" y="' + ry + '" width="' + (cw - 6).toFixed(1) + '" height="44" rx="6" fill="' + C.s2 + '" opacity="0.7"/>';
+        if (yy >= st) {
+          var frac = Math.min(1, (yy - st + 1) / q.dur);
+          var mat = Math.min(yy - st + 1, q.dur) * q.vagas;
+          var fill = mixc(C.s2, tc, 0.38 + 0.62 * frac);
+          var txt = lum(fill) > 0.42 ? '#14201A' : '#FFFFFF';
+          var cxm = cx0 + (cw - 6) / 2;
+          s += '<rect x="' + cx0.toFixed(1) + '" y="' + ry + '" width="' + (cw - 6).toFixed(1) + '" height="44" rx="6" fill="' + css(fill) + '"/>';
+          s += '<text x="' + cxm.toFixed(1) + '" y="' + (ry + 21) + '" font-size="14" font-weight="700" text-anchor="middle" fill="' + txt + '" font-family="' + MONO + '">' + fmt(mat, 0) + '</text>';
+          s += '<text x="' + cxm.toFixed(1) + '" y="' + (ry + 36) + '" font-size="10" text-anchor="middle" fill="' + txt + '" font-family="' + MONO + '">' + fmt(mat * f * c.fec, 1) + ' MEq</text>';
+          if (yy === st) {
+            s += '<text x="' + (cx0 + 5).toFixed(1) + '" y="' + (ry + 11) + '" font-size="8" font-weight="700" fill="' + txt + '">ABERTURA</text>';
+          }
+        }
+      }
+    });
+
+    // rodapé com totais
+    s += '<line x1="20" x2="' + (W - 20) + '" y1="' + yf + '" y2="' + yf + '" stroke="' + C.line + '" stroke-width="1"/>';
+    var labels = ['Matrículas dos novos cursos', 'MEq técnico total', '% técnico (meta ' + fmt(state.meta.tec, 0) + '%)'];
+    labels.forEach(function (lab, k) {
+      var cy = yf + 22 + k * 32;
+      s += '<text x="34" y="' + (cy + 4) + '" font-size="12" font-weight="' + (k === 2 ? '700' : '400') + '" fill="' + C.fg + '">' + esc(lab) + '</text>';
+      for (var j = 0; j < n; j++) {
+        var r = rows[j], cxm = X0 + cw * j + cw / 2;
+        if (k === 0) {
+          s += '<text x="' + cxm.toFixed(1) + '" y="' + (cy + 4) + '" font-size="12" text-anchor="middle" fill="' + C.fg + '" font-family="' + MONO + '">' + fmt(r.mat, 0) + '</text>';
+        } else if (k === 1) {
+          s += '<text x="' + cxm.toFixed(1) + '" y="' + (cy + 4) + '" font-size="12" text-anchor="middle" fill="' + C.fg + '" font-family="' + MONO + '">' + fmt(r.tec, 1) + '</text>';
+        } else {
+          var ok = r.pTec >= metaT - 1e-9;
+          var pw = Math.min(cw - 10, 70);
+          s += '<rect x="' + (cxm - pw / 2).toFixed(1) + '" y="' + (cy - 11) + '" width="' + pw.toFixed(1) + '" height="22" rx="11" fill="' + (ok ? C.goodbg : C.warnbg) + '"/>';
+          s += '<text x="' + cxm.toFixed(1) + '" y="' + (cy + 4) + '" font-size="12" font-weight="700" text-anchor="middle" fill="' + (ok ? C.good : C.warn) + '" font-family="' + MONO + '">' + pct(r.pTec) + '</text>';
+        }
+      }
+    });
+
+    // legenda
+    var ly = yl + 6;
+    s += '<rect x="20" y="' + (ly - 10) + '" width="12" height="12" rx="2" fill="' + C.int + '"/><text x="38" y="' + ly + '" font-size="11" fill="' + C.muted + '">Integrado ao ensino médio</text>';
+    s += '<rect x="200" y="' + (ly - 10) + '" width="12" height="12" rx="2" fill="' + C.sub + '"/><text x="218" y="' + ly + '" font-size="11" fill="' + C.muted + '">Subsequente</text>';
+    s += '<text x="320" y="' + ly + '" font-size="11" fill="' + C.muted + '">Cor mais clara: turmas ainda em formação. Cada célula mostra as matrículas e as MEq do curso no ano.</text>';
+    s += '</svg>';
+    return s;
+  }
+
+  function simAlt(rows) {
+    var list = assigned().slice().sort(function (a, b) { return state.year[a.id] - state.year[b.id]; });
+    if (!list.length) return 'Simulação da implantação: nenhum curso selecionado.';
+    var fy = endYear(), r = rows[rows.length - 1];
+    rows.forEach(function (x) { if (x.y === fy) r = x; });
+    return 'Simulação da implantação: ' + list.map(function (c) { return c.nome + ' (' + TYPES[state.type[c.id]].toLowerCase() + ', ' + state.year[c.id] + ')'; }).join('; ') +
+      '. Em ' + fy + ', o técnico chega a ' + pct(r.pTec) + ' das matrículas equivalentes do campus.';
+  }
+
+  function renderSim(rows) {
+    try {
+      var svg = buildSim(rows);
+      var img = $('sim-img');
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      img.alt = simAlt(rows);
+    } catch (e) { /* a imagem é opcional; o restante da página segue funcionando */ }
+  }
+
   function syncInputs() {
     $('in-auto').checked = state.auto;
-    $('in-fech').value = state.fech;
+    $('in-fi').value = state.fechI;
+    $('in-fs').value = state.fechS;
     $('in-vp').value = state.vp;
-    $('in-cp').value = state.cp;
-    $('in-dp').value = state.dp;
+    $('in-ci').value = state.def.int.ch;
+    $('in-di').value = state.def.int.dur;
+    $('in-ds').value = state.def.sub.dur;
     $('in-btec').value = state.base.tec;
     $('in-blic').value = state.base.lic;
     $('in-bout').value = state.base.out;
@@ -686,6 +921,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
     renderChart(rows);
     renderProj(rows);
     renderCmp();
+    renderSim(rows);
   }
 
   /* ---------- Eventos ---------- */
@@ -695,6 +931,9 @@ details.panel[open] > summary { margin-bottom: 12px; }
     if (t.dataset.preset) {
       var p = PRESETS.filter(function (x) { return x.id === t.dataset.preset; })[0];
       if (p) applyPreset(p);
+    } else if (t.dataset.alltype) {
+      COURSES.forEach(function (c) { setType(c.id, t.dataset.alltype); });
+      syncInputs(); update();
     } else if (t.dataset.inc) {
       var y = parseInt(t.dataset.inc, 10);
       var next = COURSES.filter(function (c) { return !state.year[c.id]; })[0];
@@ -704,7 +943,10 @@ details.panel[open] > summary { margin-bottom: 12px; }
       var list = coursesIn(yy);
       if (list.length) { state.year[list[list.length - 1].id] = null; update(); }
     } else if (t.id === 'btn-vp') {
-      COURSES.forEach(function (c) { state.vagas[c.id] = state.vp; state.ch[c.id] = state.cp; state.dur[c.id] = state.dp; });
+      COURSES.forEach(function (c) {
+        var tp = state.type[c.id];
+        state.vagas[c.id] = state.vp; state.ch[c.id] = defCH(c, tp); state.dur[c.id] = defDur(tp);
+      });
       syncInputs(); update();
     } else if (t.id === 'btn-adj0') {
       state.adj = { g: 0, tec: 0, lic: 0, out: 0 };
@@ -717,6 +959,9 @@ details.panel[open] > summary { margin-bottom: 12px; }
     if (t.dataset && t.dataset.year) {
       state.year[t.dataset.year] = t.value ? parseInt(t.value, 10) : null;
       update();
+    } else if (t.dataset && t.dataset.tipo) {
+      setType(t.dataset.tipo, t.value);
+      syncInputs(); update();
     } else if (t.dataset && t.dataset.pick) {
       var y = parseInt(t.dataset.pyear, 10);
       if (t.checked) { state.year[t.dataset.pick] = y; }
@@ -733,13 +978,15 @@ details.panel[open] > summary { margin-bottom: 12px; }
     if (t.dataset) {
       if (t.dataset.vagas) { state.vagas[t.dataset.vagas] = Math.max(0, num(t.value, 0)); update(); return; }
       if (t.dataset.ch) { state.ch[t.dataset.ch] = Math.max(0, num(t.value, 0)); update(); return; }
-      if (t.dataset.dur) { state.dur[t.dataset.dur] = Math.min(6, Math.max(1, Math.round(num(t.value, 3)))); update(); return; }
+      if (t.dataset.dur) { state.dur[t.dataset.dur] = Math.min(6, Math.max(0.5, num(t.value, 3))); update(); return; }
     }
     switch (t.id) {
-      case 'in-fech': state.fech = Math.max(0, num(t.value, 0)); break;
-      case 'in-vp': state.vp = Math.max(0, num(t.value, 0)); return;
-      case 'in-cp': state.cp = Math.max(0, num(t.value, 0)); return;
-      case 'in-dp': state.dp = Math.min(6, Math.max(1, Math.round(num(t.value, 3)))); update(); return;
+      case 'in-fi': state.fechI = Math.max(0, num(t.value, 0)); break;
+      case 'in-fs': state.fechS = Math.max(0, num(t.value, 0)); break;
+      case 'in-vp': state.vp = Math.max(0, num(t.value, 0)); break;
+      case 'in-ci': state.def.int.ch = Math.max(0, num(t.value, 0)); break;
+      case 'in-di': state.def.int.dur = Math.min(6, Math.max(0.5, num(t.value, 3))); break;
+      case 'in-ds': state.def.sub.dur = Math.min(6, Math.max(0.5, num(t.value, 1.5))); break;
       case 'in-btec': state.base.tec = Math.max(0, num(t.value, 0)); break;
       case 'in-blic': state.base.lic = Math.max(0, num(t.value, 0)); break;
       case 'in-bout': state.base.out = Math.max(0, num(t.value, 0)); break;
@@ -754,6 +1001,14 @@ details.panel[open] > summary { margin-bottom: 12px; }
     }
     update();
   });
+
+  // a imagem usa cores resolvidas, então é redesenhada quando o tema muda
+  try {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { renderSim(project()); });
+  } catch (e) {}
+  try {
+    new MutationObserver(function () { renderSim(project()); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  } catch (e) {}
 
   renderPresets();
   buildCourseTable();
