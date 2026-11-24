@@ -375,7 +375,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
   <section aria-labelledby="h-sim" style="display:flex;flex-direction:column;gap:10px">
     <div class="panel-head" style="margin-bottom:0">
       <h2 id="h-sim">Simulação da implantação por ano</h2>
-      <span class="hint">A imagem acompanha as escolhas feitas acima</span>
+      <span class="hint">A imagem acompanha as escolhas feitas acima e vai até 2031</span>
     </div>
     <div class="sim-scroll"><img id="sim-img" class="sim-img" alt="Simulação da implantação dos cursos técnicos por ano"></div>
   </section>
@@ -403,6 +403,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
   var BASE_YEAR = 2026;
   var FIRST_SEM2 = 2027; /* em 2027 só abre subsequente, com a 1ª turma no 2º semestre */
   var MIN_LAST_YEAR = 2033;
+  var SIM_LAST_YEAR = 2031; /* a imagem da simulação vai até este ano */
 
   var PRESETS = [
     { id: 'um', nome: '1 curso por ano', plan: { 2028: ['av'], 2029: ['ds'], 2030: ['rc'] }, vagas: {} },
@@ -821,6 +822,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
   }
 
   function buildSim(rows) {
+    rows = rows.filter(function (r) { return r.y <= SIM_LAST_YEAR; });
     var C = {
       bg: cv('--surface', '#FFFFFF'), fg: cv('--fg', '#16211A'), muted: cv('--muted', '#566559'),
       line: cv('--line', '#D6DDD6'), s2: cv('--surface-2', '#EDF1EC'),
@@ -846,7 +848,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
     s += '<text x="20" y="32" font-size="19" font-weight="700" fill="' + C.fg + '">Simulação de implantação dos cursos técnicos · IFCE Campus Canindé</text>';
     s += '<text x="20" y="54" font-size="12" fill="' + C.muted + '">' +
       esc(ativos + (ativos === 1 ? ' curso' : ' cursos') + (ativos ? ' (' + typeSummary(list) + ')' : '') + ' · ' + fmt(vagasTot, 0) + ' vagas por ano · FECH ' +
-      (state.auto ? 'calculado (carga horária ÷ duração × 800)' : 'fixo') + ' · MEq atuais ' + (adjActive() ? 'ajustadas' : 'sem ajuste') + ' · meta do técnico ' + fmt(state.meta.tec, 0) + '%') + '</text>';
+      (state.auto ? 'calculado (carga horária ÷ duração × 800)' : 'fixo') + ' · MEq atuais ' + (adjActive() ? 'ajustadas' : 'sem ajuste') + ' · meta do técnico ' + fmt(state.meta.tec, 0) + '% · imagem até ' + SIM_LAST_YEAR) + '</text>';
 
     // cabeçalho dos anos
     for (var i = 0; i < n; i++) {
@@ -870,7 +872,7 @@ details.panel[open] > summary { margin-bottom: 12px; }
         s += '<rect x="' + cx0.toFixed(1) + '" y="' + ry + '" width="' + (cw - 6).toFixed(1) + '" height="44" rx="6" fill="' + C.s2 + '" opacity="0.7"/>';
         var mat = matIn(c, yy);
         if (mat > 0) {
-          var frac = Math.min(1, mat / ((q.vagas * q.dur) || 1));
+          var frac = Math.min(1, mat / ((q.vagas * entOf(c) * q.dur) || 1));
           var fill = mixc(C.s2, tc, 0.38 + 0.62 * frac);
           var txt = lum(fill) > 0.2 ? '#14201A' : '#FFFFFF';
           var cxm = cx0 + (cw - 6) / 2;
@@ -917,8 +919,8 @@ details.panel[open] > summary { margin-bottom: 12px; }
   function simAlt(rows) {
     var list = assigned().slice().sort(function (a, b) { return state.year[a.id] - state.year[b.id]; });
     if (!list.length) return 'Simulação da implantação: nenhum curso selecionado.';
-    var fy = endYear(), r = rows[rows.length - 1];
-    rows.forEach(function (x) { if (x.y === fy) r = x; });
+    rows = rows.filter(function (x) { return x.y <= SIM_LAST_YEAR; });
+    var r = rows[rows.length - 1], fy = r.y;
     return 'Simulação da implantação: ' + list.map(function (c) { return c.nome + ' (' + TYPES[state.type[c.id]].toLowerCase() + ', ' + state.year[c.id] + ')'; }).join('; ') +
       '. Em ' + fy + ', o técnico chega a ' + pct(r.pTec) + ' das matrículas equivalentes do campus.';
   }
